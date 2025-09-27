@@ -9,6 +9,8 @@ import { Badge } from "../ui/badge";
 import { useState } from "react";
 import MobileMenu from "./_components/MobileMenu";
 import { Bars3Icon } from "@heroicons/react/24/outline";
+import { UserButton, useUser } from "@clerk/nextjs";
+import { Button } from "../ui/button";
 
 export const navLinks = [
   { id: 1, title: "Home", href: "/" },
@@ -23,6 +25,8 @@ export const navLinks = [
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { user,isSignedIn } = useUser();
+
   return (
     <header className="fixed top-0 left-0 w-full bg-white/95 backdrop-blur-md z-50 shadow-lg dark:bg-gray-800/95">
       <div className="py-6 px-6 container mx-auto  items-center justify-between border-b border-gray-100 dark:border-gray-700 md:flex hidden">
@@ -44,12 +48,13 @@ const Header = () => {
 
         <ul className="flex items-center space-x-4 text-gray-500 dark:text-gray-300">
           <li>
-            <Link
-              href={"/auth"}
-              className="hover:text-tertiary transition-colors duration-300"
-            >
-              <CiUser size={24} />
-            </Link>
+            {isSignedIn ? (
+              <UserButton />
+            ) : (
+              <Link href={"/sign-in"}>
+                <Button variant={"outline"} className="cursor-pointer">Sign In</Button>
+              </Link>
+            )}
           </li>
           <li>
             <Link
@@ -73,12 +78,12 @@ const Header = () => {
         </ul>
       </div>
       <div className="py-4 flex justify-between items-center px-4 md:hidden">
-         <Link
-            href={"/"}
-            className="font-extrabold md:hidden block text-3xl md:text-4xl text-tertiary dark:text-white tracking-widest transition-colors duration-300 hover:text-orange-600 dark:hover:text-orange-400 mb-4"
-          >
-            HydraShop
-          </Link>
+        <Link
+          href={"/"}
+          className="font-extrabold md:hidden block text-3xl md:text-4xl text-tertiary dark:text-white tracking-widest transition-colors duration-300 hover:text-orange-600 dark:hover:text-orange-400 mb-4"
+        >
+          HydraShop
+        </Link>
         <button
           onClick={() => setIsMenuOpen(true)}
           className="md:hidden text-gray-700 dark:text-white cursor-pointer"

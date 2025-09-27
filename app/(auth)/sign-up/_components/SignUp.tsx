@@ -11,7 +11,7 @@ import FormInput from "@/components/inputs/FormInput";
 import { Form } from "@/components/ui/form";
 import { toast } from "sonner";
 const SignUpPage = () => {
-  const { isLoaded, signUp, setActive } = useSignUp();
+  const { isLoaded, signUp } = useSignUp();
   const router = useRouter();
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
@@ -28,24 +28,40 @@ const SignUpPage = () => {
     formState: { errors, isSubmitting },
   } = form;
 
-  const onSubmit = async (data:SignUpFormData) => {
+  // GOOGLE AUTH
+  const handleGoogleSignIn = async () => {
+    if (!isLoaded) return;
+
+    try {
+      await signUp.authenticateWithRedirect({
+        strategy: "oauth_google",
+        redirectUrlComplete: "/",
+        redirectUrl: "/",
+      });
+    } catch (err: any) {
+      console.error("Google Sign-In Error:", err);
+      toast.error(err.errors?.[0]?.longMessage || "Google Sign-In failed");
+    }
+  };
+
+  const onSubmit = async (data: SignUpFormData) => {
     if (!isLoaded) {
       toast.error("Clerk is not fully loaded. Please wait a moment.");
       return;
     }
 
     try {
-    await signUp.create({
+      await signUp.create({
         firstName: data.name,
         emailAddress: data.email,
         password: data.password,
       });
-       await signUp.prepareEmailAddressVerification({
-        strategy:"email_code"
-      })
-      toast.success("You will be redirected shortly.")
-      router.push("/verify-email")
-    } catch (err:any) {
+      await signUp.prepareEmailAddressVerification({
+        strategy: "email_code",
+      });
+      toast.success("You will be redirected shortly.");
+      router.push("/verify-email");
+    } catch (err: any) {
       toast.error(err.message);
     }
   };
@@ -59,6 +75,7 @@ const SignUpPage = () => {
 
         <div className="flex justify-center space-x-4">
           <button
+            onClick={handleGoogleSignIn}
             className="flex items-center justify-center w-full py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
             aria-label="Sign up with Google"
           >
