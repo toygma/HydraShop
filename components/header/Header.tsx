@@ -25,7 +25,7 @@ const Header = () => {
   const pathname = usePathname();
   return (
     <header className="fixed top-0 left-0 w-full bg-white/95 backdrop-blur-md z-50 shadow-lg dark:bg-gray-800/95">
-      <div className="py-4 px-6 container mx-auto  items-center justify-between border-b border-gray-100 dark:border-gray-700 md:flex hidden ">
+      <div className="py-6 px-6 container mx-auto  items-center justify-between border-b border-gray-100 dark:border-gray-700 md:flex hidden">
         <div className=" text-gray-500 dark:text-gray-300">
           <CiSearch
             size={22}
@@ -72,7 +72,7 @@ const Header = () => {
           </li>
         </ul>
       </div>
-      <div className="py-4 flex justify-between items-center px-4">
+      <div className="py-4 flex justify-between items-center px-4 md:hidden">
          <Link
             href={"/"}
             className="font-extrabold md:hidden block text-3xl md:text-4xl text-tertiary dark:text-white tracking-widest transition-colors duration-300 hover:text-orange-600 dark:hover:text-orange-400 mb-4"
@@ -88,7 +88,7 @@ const Header = () => {
         </button>
       </div>
 
-      <nav className="hidden md:block border-b-2 border-transparent py-3">
+      <nav className="hidden md:block border-b-2 border-transparent py-4">
         <ul className="flex items-center justify-center space-x-4 ">
           {navLinks.map((item) => (
             <li key={item.id} className="relative group">
