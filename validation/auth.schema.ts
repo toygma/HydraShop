@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+// SIGN UP SCHEMA
 const baseSignUpSchema = z.object({
   name: z
     .string()
@@ -24,4 +25,17 @@ export const signUpSchema = baseSignUpSchema.refine(
   }
 );
 
-export type SignUpFormData = z.infer<typeof signUpSchema>
+export type SignUpFormData = z.infer<typeof signUpSchema>;
+
+// SIGN IN SCHEMA
+
+export const signInSchema = z.object({
+  email: z.email("Invalid email format"),
+
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters long")
+    .max(50, "Password must be 50 characters or less"),
+});
+
+export type SignInFormData = z.infer<typeof signInSchema>;
