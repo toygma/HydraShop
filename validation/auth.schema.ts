@@ -12,7 +12,11 @@ const baseSignUpSchema = z.object({
   password: z
     .string()
     .min(8, "Password must be at least 8 characters long")
-    .max(50, "Password must be 50 characters or less"),
+    .max(50, "Password must be 50 characters or less")
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/,
+      "Password must include uppercase, lowercase, and a number"
+    ),
 
   confirmPassword: z.string().min(1, "Confirm password is required"),
 });

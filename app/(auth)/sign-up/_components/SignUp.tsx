@@ -1,5 +1,7 @@
 "use client";
 import Link from "next/link";
+import { useSignUp } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { AiFillGithub } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
 import { useForm } from "react-hook-form";
@@ -8,8 +10,9 @@ import { SignUpFormData, signUpSchema } from "@/validation/auth.schema";
 import FormInput from "@/components/inputs/FormInput";
 import { Form } from "@/components/ui/form";
 import { toast } from "sonner";
-
 const SignUpPage = () => {
+  const { isLoaded, signUp, setActive } = useSignUp();
+  const router = useRouter();
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -25,17 +28,26 @@ const SignUpPage = () => {
     formState: { errors, isSubmitting },
   } = form;
 
-  const onSubmit = async (data: SignUpFormData) => {
-    const newUser = {
-      _type: "user",
-      name: data.name,
-      email: data.email,
-      password: data.password,
-    };
+  const onSubmit = async (data:SignUpFormData) => {
+    if (!isLoaded) {
+      toast.error("Clerk is not fully loaded. Please wait a moment.");
+      return;
+    }
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    toast.success("Success. Please sign in !!");
+    try {
+    await signUp.create({
+        firstName: data.name,
+        emailAddress: data.email,
+        password: data.password,
+      });
+       await signUp.prepareEmailAddressVerification({
+        strategy:"email_code"
+      })
+      toast.success("You will be redirected shortly.")
+      router.push("/verify-email")
+    } catch (err:any) {
+      toast.error(err.message);
+    }
   };
   return (
     <div className="w-full max-w-xl bg-white dark:bg-gray-800 shadow-2xl rounded-xl p-8 sm:p-10 border border-gray-200 dark:border-gray-700">
