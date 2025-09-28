@@ -5,6 +5,7 @@ import { CiUser } from "react-icons/ci";
 import { ShoppingBag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { MdDarkMode } from "react-icons/md";
+import { UserButton, useUser } from "@clerk/nextjs";
 
 interface Props {
   isOpen: boolean;
@@ -12,6 +13,8 @@ interface Props {
 }
 
 const MobileMenu = ({ isOpen, onClose }: Props) => {
+  const { isSignedIn } = useUser();
+
   return (
     <>
       {isOpen && (
@@ -31,7 +34,11 @@ const MobileMenu = ({ isOpen, onClose }: Props) => {
           <h2 className="text-xl font-bold text-tertiary dark:text-white tracking-widest">
             HydraShop
           </h2>
-          <button onClick={onClose} aria-label="Close Menu" className="cursor-pointer">
+          <button
+            onClick={onClose}
+            aria-label="Close Menu"
+            className="cursor-pointer"
+          >
             <XMarkIcon className="w-7 h-7 text-gray-700 dark:text-gray-300 hover:text-red-500 transition duration-150 " />
           </button>
         </div>
@@ -60,14 +67,20 @@ const MobileMenu = ({ isOpen, onClose }: Props) => {
 
         <div className="p-4 border-t border-gray-200 dark:border-gray-700">
           <ul className="flex items-center justify-around text-gray-600 dark:text-gray-300">
-            <li onClick={onClose}>
-              <Link
-                href={"/auth"}
-                className="hover:text-tertiary transition-colors duration-300 flex flex-col items-center"
-              >
-                <CiUser size={28} />
-                <span className="text-xs mt-1">Login</span>
-              </Link>
+            <li >
+              <li>
+                {isSignedIn ? (
+                  <UserButton />
+                ) : (
+                  <Link
+                    href={"/sign-in"}
+                    className="hover:text-tertiary transition-colors duration-300 flex flex-col items-center"
+                  >
+                    <CiUser size={28} />
+                    <span className="text-xs mt-1">Login</span>
+                  </Link>
+                )}
+              </li>
             </li>
 
             <li onClick={onClose}>
@@ -75,7 +88,7 @@ const MobileMenu = ({ isOpen, onClose }: Props) => {
                 href={"/card"}
                 className="relative hover:text-tertiary transition-colors duration-300 flex flex-col items-center"
               >
-                <ShoppingBag size={26} />
+                <ShoppingBag size={22} />
                 <span className="text-xs mt-1">Bag</span>
                 <Badge
                   children={2}
@@ -91,7 +104,7 @@ const MobileMenu = ({ isOpen, onClose }: Props) => {
               <MdDarkMode
                 className="cursor-pointer hover:text-black dark:hover:text-white transition-colors duration-300 "
                 title="Toggle Dark Mode"
-                size={28}
+                size={22}
               />
               <span className="text-xs mt-1 block text-center">Theme</span>
             </li>

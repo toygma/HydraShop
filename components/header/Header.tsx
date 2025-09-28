@@ -25,7 +25,7 @@ export const navLinks = [
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { user,isSignedIn } = useUser();
+  const { isSignedIn } = useUser();
 
   return (
     <header className="fixed top-0 left-0 w-full bg-white/95 backdrop-blur-md z-50 shadow-lg dark:bg-gray-800/95">
@@ -58,7 +58,7 @@ const Header = () => {
           </li>
           <li>
             <Link
-              href={"/card"}
+              href={"/cart"}
               className="hover:text-tertiary transition-colors duration-300 relative"
             >
               <ShoppingBag size={22} />
