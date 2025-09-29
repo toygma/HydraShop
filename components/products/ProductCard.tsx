@@ -6,22 +6,31 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import { urlFor } from "@/sanity/lib/image";
 import { formattedPrice } from "@/utils/helper";
+import QuantityButtons from "./_components/QuantityButtons";
 
 const ProductCart = ({ product }: { product: Product }) => {
   const safeRating = Math.round(product?.rating ?? 0);
   const safeReviewsCount = product?.reviewsCount ?? 0;
 
-  const productUrl = `/product/${product?.slug?.current ?? ""}`;
+  const productUrl = `/product/${product?.slug?.current || ""}`;
+
+  const totalStock =
+    product?.variants?.reduce(
+      (sum, item) => sum + (item.stockQuantity || 0),
+      0
+    ) || 0;
+  const isOutOfStock = totalStock <= 0;
+
+  const stockText = isOutOfStock ? "Out of stock" : "In stock";
 
   return (
     <div>
       {product && (
         <div
           key={product._id}
-          className="group relative bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden transform transition-transform duration-300 hover:scale-[1.03] hover:shadow-lg"
+          className="group relative bg-white border border-gray-700 rounded-xl shadow-2xl overflow-hidden transform transition-all duration-300 hover:scale-[1.03] hover:shadow-indigo-500/50"
         >
-          {/* Product Image */}
-          <div className="w-full h-64 bg-gray-100 flex items-center justify-center overflow-hidden">
+          <div className="w-full h-64 bg-gray-800 flex items-center justify-center overflow-hidden relative">
             {product?.images?.[0] && product.images[0].asset && (
               <Link href={productUrl}>
                 <Image
@@ -29,57 +38,85 @@ const ProductCart = ({ product }: { product: Product }) => {
                   width={500}
                   height={500}
                   alt={product?.name ?? "product image"}
-                  className="w-full h-72 object-cover overflow-hidden transition-transform duration-500 group-hover:scale-105"
+                  className={`w-full h-72 object-cover overflow-hidden transition-transform duration-500 group-hover:scale-105 ${
+                    isOutOfStock ? "opacity-50 grayscale" : ""
+                  }`}
                 />
               </Link>
+            )}
+
+            <div
+              className={`absolute top-0 right-0 px-3 py-1 font-bold text-xs uppercase tracking-wider ${
+                isOutOfStock
+                  ? "bg-red-600 text-black"
+                  : "bg-green-500 text-gray-900"
+              } rounded-bl-lg`}
+            >
+              {stockText}
+            </div>
+
+            {isOutOfStock && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
+                <span className="text-2xl font-extrabold text-white rotate-[-15deg] border-2 border-white px-4 py-2">
+                  SOLD OUT
+                </span>
+              </div>
             )}
           </div>
 
           {/* Product Info */}
-          <div className="p-4">
-            <h3 className="text-lg font-semibold text-gray-800 line-clamp-1">
+          <div className="p-5 text-black">
+            <h3 className="text-xl font-extrabold text-indigo-400 line-clamp-1">
               {product?.name}
             </h3>
             <div className="flex items-center mt-2">
+              {/* Yıldızların rengini dark mode'a uyarla */}
               {Array.from({ length: 5 }, (_, i) => (
                 <Star
                   key={i}
                   size={16}
-                  fill={i < safeRating ? "#fbbf24" : "#e5e7eb"}
-                  stroke={i < safeRating ? "#fbbf24" : "#a1a1aa"}
+                  fill={i < safeRating ? "#facc15" : "#374151"} // sarı ve koyu gri
+                  stroke={i < safeRating ? "#facc15" : "#4b5563"}
                   className="mr-[2px]"
                 />
               ))}
-              <span className="text-sm text-gray-600 ml-2">
-                ({safeReviewsCount})
+              <span className="text-sm text-gray-400 ml-2">
+                ({safeReviewsCount} reviews)
               </span>
             </div>
 
-            <div>
+            <div className="flex items-center justify-between">
+              {/* Fiyat Alanı: Daha belirgin bir tipografi */}
               {product?.salePrice &&
               product?.salePrice < (product?.price as number) ? (
-                <div className="flex items-baseline space-x-2 mt-3">
-                  <p className="text-xl font-extrabold text-red-600">
+                <div className="flex items-baseline space-x-3 mt-4">
+                  <p className="text-2xl font-extrabold text-red-500">
                     {formattedPrice(product.salePrice)}
                   </p>
-
-                  <p className="text-sm font-medium text-gray-400 line-through">
+                  <p className="text-md font-medium text-gray-500 line-through">
                     {formattedPrice(product.price)}
                   </p>
                 </div>
               ) : (
-                <div className="mt-3">
-                  <p className="text-xl font-bold text-gray-900">
+                <div className="mt-4">
+                  <p className="text-2xl font-extrabold text-black">
                     {formattedPrice(product?.price)}
                   </p>
                 </div>
               )}
+              {!isOutOfStock && (
+                <div className="mt-6">
+                  <QuantityButtons />
+                </div>
+              )}
             </div>
+
             <Button
-              className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-md transition duration-300 transform group-hover:scale-[1.01] cursor-pointer"
+              className="w-full mt-6 bg-indigo-600 cursor-pointer hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition duration-300 transform shadow-lg hover:shadow-indigo-500/40"
+              disabled={isOutOfStock}
               onClick={() => console.log(`Adding ${product?.name} to cart`)}
             >
-              Add to Cart
+              {isOutOfStock ? "Sold Out" : "Add to cart"}
             </Button>
           </div>
         </div>
