@@ -1,9 +1,86 @@
-import React from 'react'
+import { PortableText } from "@portabletext/react";
+import { getProductsBySlug } from "@/utils/helper";
+import { notFound } from "next/navigation";
+import React from "react";
+import ImageView from "../_components/ImageView";
+import { Product } from "@/sanity.types";
+import PriceView from "@/components/products/_components/PriceView";
+import { Button } from "@/components/ui/button";
+import { Heart, Bookmark } from "lucide-react";
 
-const SingleProductPage = () => {
+const SingleProductPage = async ({ params }: { params: { slug: string } }) => {
+  const { slug } = params;
+
+  const product: Product = await getProductsBySlug(slug);
+
+  if (!product) {
+    return notFound();
+  }
+
+  const { images } = product;
+
   return (
-    <div>SingleProductPage</div>
-  )
-}
+    <div className="py-10 flex flex-col md:flex-row gap-10 container mx-auto min-h-screen mt-32">
+      <div className="flex w-full gap-10">
+        <div className="w-full md:w-1/2">
+          <ImageView images={images} />
+        </div>
 
-export default SingleProductPage
+        <div className="w-full md:w-1/2 flex flex-col gap-6 p-4 md:p-0">
+          <div className="space-y-2 border-b pb-4">
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900">
+              {product?.name}
+            </h2>
+            <PriceView price={product?.price} salePrice={product?.salePrice} />
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-700">Description</h3>
+            <p className="text-gray-600 leading-relaxed text-base">
+              <PortableText value={product?.description || []} />
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 mt-4">
+            <Button
+              className="flex-grow bg-indigo-600 h-12 text-lg font-semibold 
+                         cursor-pointer hover:bg-indigo-700 
+                         transition duration-300 transform shadow-md 
+                         hover:shadow-indigo-500/40"
+            >
+              Add to Cart
+            </Button>
+
+            <Button
+              variant="outline" 
+              className="w-full sm:w-auto h-12 px-4 border-gray-300 text-gray-700 
+                         hover:bg-gray-50 transition duration-300 cursor-pointer"
+              aria-label="Add to Wishlist"
+            >
+              <Heart className="w-5 h-5 text-red-500 " />
+            </Button>
+            <Button
+              variant="outline" 
+              className="w-full sm:w-auto h-12 px-4 border-gray-300 text-gray-700 
+                         hover:bg-gray-50 transition duration-300 cursor-pointer"
+              aria-label="Add to save"
+            >
+              <Bookmark className="w-5 h-5 text-gray-500  " />
+            </Button>
+          </div>
+
+          <div className="mt-4 text-sm text-gray-500 border-t pt-4">
+            <p className="font-medium">
+              🚚 Fast Shipping: Delivered in 2-3 business days.
+            </p>
+            <p className="font-medium">
+              🔄 Easy Returns: 30-day return policy.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SingleProductPage;

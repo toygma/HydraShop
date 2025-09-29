@@ -5,8 +5,8 @@ import { Product } from "@/sanity.types";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { urlFor } from "@/sanity/lib/image";
-import { formattedPrice } from "@/utils/helper";
 import QuantityButtons from "./_components/QuantityButtons";
+import PriceView from "./_components/PriceView";
 
 const ProductCart = ({ product }: { product: Product }) => {
   const safeRating = Math.round(product?.rating ?? 0);
@@ -86,24 +86,7 @@ const ProductCart = ({ product }: { product: Product }) => {
             </div>
 
             <div className="flex items-center justify-between">
-              {/* Fiyat Alanı: Daha belirgin bir tipografi */}
-              {product?.salePrice &&
-              product?.salePrice < (product?.price as number) ? (
-                <div className="flex items-baseline space-x-3 mt-4">
-                  <p className="text-2xl font-extrabold text-red-500">
-                    {formattedPrice(product.salePrice)}
-                  </p>
-                  <p className="text-md font-medium text-gray-500 line-through">
-                    {formattedPrice(product.price)}
-                  </p>
-                </div>
-              ) : (
-                <div className="mt-4">
-                  <p className="text-2xl font-extrabold text-black">
-                    {formattedPrice(product?.price)}
-                  </p>
-                </div>
-              )}
+              <PriceView price={product?.price} salePrice={product?.salePrice}  /> 
               {!isOutOfStock && (
                 <div className="mt-6">
                   <QuantityButtons />
