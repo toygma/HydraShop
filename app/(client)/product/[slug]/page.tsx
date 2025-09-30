@@ -6,7 +6,9 @@ import ImageView from "../_components/ImageView";
 import { Product } from "@/sanity.types";
 import PriceView from "@/components/products/_components/PriceView";
 import { Button } from "@/components/ui/button";
-import { Heart, Bookmark } from "lucide-react";
+import { Heart, Bookmark, BoxIcon, Share } from "lucide-react";
+import ProductCharacteristics from "@/components/products/_components/ProductCharacteristics";
+import { productActions } from "../_components/product-action";
 
 const SingleProductPage = async ({ params }: { params: { slug: string } }) => {
   const { slug } = params;
@@ -52,7 +54,7 @@ const SingleProductPage = async ({ params }: { params: { slug: string } }) => {
             </Button>
 
             <Button
-              variant="outline" 
+              variant="outline"
               className="w-full sm:w-auto h-12 px-4 border-gray-300 text-gray-700 
                          hover:bg-gray-50 transition duration-300 cursor-pointer"
               aria-label="Add to Wishlist"
@@ -60,7 +62,7 @@ const SingleProductPage = async ({ params }: { params: { slug: string } }) => {
               <Heart className="w-5 h-5 text-red-500 " />
             </Button>
             <Button
-              variant="outline" 
+              variant="outline"
               className="w-full sm:w-auto h-12 px-4 border-gray-300 text-gray-700 
                          hover:bg-gray-50 transition duration-300 cursor-pointer"
               aria-label="Add to save"
@@ -76,6 +78,27 @@ const SingleProductPage = async ({ params }: { params: { slug: string } }) => {
             <p className="font-medium">
               🔄 Easy Returns: 30-day return policy.
             </p>
+          </div>
+          <div className="flex flex-wrap flex-col justify-between gap-4 pt-6 pb-4 border-t border-gray-200">
+            <ProductCharacteristics product={product} />
+
+            <div className="flex flex-wrap items-center gap-6 mt-2 text-gray-600">
+              <div className="flex items-center gap-2 text-sm transition-colors duration-200 group hover:text-red-600">
+                {productActions.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <div
+                      key={item.label}
+                      className="flex items-center gap-1.5 py-1 px-2 rounded-lg border boder-gray-200 text-gray-500 transition-all duration-200
+                   hover:text-indigo-600 hover:bg-indigo-50"
+                    >
+                      <Icon className="w-4 h-4" aria-hidden="true" />
+                      <p className="font-medium tracking-wide">{item.label}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
       </div>
