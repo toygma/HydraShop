@@ -11,6 +11,7 @@ import MobileMenu from "./_components/MobileMenu";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { Button } from "../ui/button";
+import SearchBar from "../searchBar/SearchBar";
 
 export const navLinks = [
   { id: 1, title: "Home", href: "/" },
@@ -31,10 +32,8 @@ const Header = () => {
     <header className="fixed top-0 left-0 w-full bg-white/95 backdrop-blur-md z-50 shadow-lg dark:bg-gray-800/95">
       <div className="py-6 px-6 container mx-auto  items-center justify-between border-b border-gray-100 dark:border-gray-700 md:flex hidden">
         <div className=" text-gray-500 dark:text-gray-300">
-          <CiSearch
-            size={22}
-            className="cursor-pointer hover:text-tertiary transition-colors duration-200"
-          />
+          
+          <SearchBar />
         </div>
 
         <div className="absolute left-1/2 transform -translate-x-1/2">
@@ -52,7 +51,9 @@ const Header = () => {
               <UserButton />
             ) : (
               <Link href={"/sign-in"}>
-                <Button variant={"outline"} className="cursor-pointer">Sign In</Button>
+                <Button variant={"outline"} className="cursor-pointer">
+                  Sign In
+                </Button>
               </Link>
             )}
           </li>
