@@ -6,21 +6,29 @@ import HomeTabbar from "./_components/HomeTabbar";
 import { client } from "@/sanity/lib/client";
 import ProductCard from "./ProductCard";
 import { Product } from "@/sanity.types";
+import Loading from "../custom/Loading";
 
 const Products = () => {
-  const [selectedTab, setSelectedTab] = useState("");
+  const [selectedTab, setSelectedTab] = useState("All");
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const query = `*[_type == "product" && variant == $variant] | order(name asc)`;
-  const params = { variant: selectedTab.toLowerCase() };
-
-
   useEffect(() => {
     setLoading(true);
+
     const fetchData = async () => {
       try {
+        let query;
+        let params = {};
+
+        if (selectedTab === "All") {
+          query = `*[_type == "product"] | order(name asc)`;
+        } else {
+          query = `*[_type == "product" && variant == $variant] | order(name asc)`;
+          params = { variant: selectedTab.toLowerCase() };
+        }
+
         const response = await client.fetch(query, params);
         setProducts(response);
       } catch (error: any) {
@@ -29,6 +37,7 @@ const Products = () => {
         setLoading(false);
       }
     };
+
     fetchData();
   }, [selectedTab]);
 
@@ -58,7 +67,15 @@ const Products = () => {
 
       {/* Products Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
-        {products.length > 0 ? (
+        {loading ? (
+          <p>
+            <Loading
+              fullScreen
+              size={50}
+              className="flex items-center justify-center min-h-screen"
+            />
+          </p>
+        ) : products.length > 0 ? (
           products?.map((product: Product) => (
             <div key={product?._id}>
               <ProductCard product={product} />

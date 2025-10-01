@@ -6,7 +6,9 @@ const footerLinks = [
   { title: "Rooms", href: "/rooms" },
   { title: "Contact", href: "/contact" },
   { title: "About Us", href: "/about" },
-  { title: "Privacy Policy", href: "/policy" },
+  { title: "Privacy Policy", href: "/privacy" },
+  { title: "Terms", href: "/terms" },
+  { title: "FAQ", href: "/faq" },
 ];
 
 const contactDetails = [

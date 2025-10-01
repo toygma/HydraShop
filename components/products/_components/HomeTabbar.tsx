@@ -43,7 +43,7 @@ const HomeTabbar = ({ selectedTab, setSelectedTab }: Props) => {
             </button>
           ))}
 
-          <Button className=" px-2 py-1.5 md:px-6 md:py-2 rounded-full hover:bg-indigo-700 hover:text-white cursor-pointer bg-indigo-600">
+          <Button onClick={()=>setSelectedTab("All")} className=" px-2 py-1.5 md:px-6 md:py-2 rounded-full hover:bg-indigo-700 hover:text-white cursor-pointer bg-indigo-600">
             <Repeat size={22} />
           </Button>
         </nav>
