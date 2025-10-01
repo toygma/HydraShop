@@ -18,7 +18,6 @@ const AddCartButton = ({
   product,
   isOutOfStock = false,
   className,
-  showIcon = false,
 }: AddCartButtonProps) => {
   const { addItem, getItemCount } = useCartStore();
   const itemCount = getItemCount(product?._id);
@@ -33,8 +32,8 @@ const AddCartButton = ({
       addItem(product);
       toast.success(`${product.name || "Product"} added to cart`, {
         description:
-          itemCount > 0 
-            ? `There are ${itemCount + 1} items in the cart` 
+          itemCount > 0
+            ? `There are ${itemCount + 1} items in the cart`
             : undefined,
       });
     } catch (error) {
@@ -42,12 +41,6 @@ const AddCartButton = ({
       toast.error("Product could not be added to the cart");
     }
   };
-
-  const buttonText = isOutOfStock
-    ? "Out of Stock"
-    : itemCount > 0
-    ? `Add to Cart (${itemCount})`
-    : "Add to Cart";
 
   return (
     <Button
@@ -57,10 +50,8 @@ const AddCartButton = ({
       )}
       disabled={isOutOfStock || !product}
       onClick={handleAddToCart}
-      aria-label={buttonText}
     >
-      {showIcon && <ShoppingCart className="w-4 h-4 mr-2" />}
-      {buttonText}
+      {isOutOfStock ? "Out Of Stock" : "Add To Cart"}
     </Button>
   );
 };

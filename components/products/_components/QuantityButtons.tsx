@@ -20,6 +20,7 @@ const QuantityButtons = ({
 }: QuantityButtonsProps) => {
   const { addItem, getItemCount, removeItem } = useCartStore();
   const itemCount = getItemCount(product?._id);
+  console.log("🚀 ~ QuantityButtons ~ itemCount:", itemCount);
 
   const handleRemoveProduct = () => {
     if (!product?._id) {
@@ -29,12 +30,22 @@ const QuantityButtons = ({
 
     try {
       removeItem(product._id);
-      toast.success(`${product.name || "Product"} removed from cart`, {
-        description:
-          itemCount > 1
-            ? `There are ${itemCount - 1} items left in the cart`
-            : "Your cart is now empty",
-      });
+
+      if (itemCount > 1) {
+        toast.success(
+          `${product.name || "Product"} Quantity Decreased Successfully!`,
+          {
+            description:
+              itemCount > 1
+                ? `There are ${itemCount - 1} items left in the cart`
+                : "Your cart is now empty",
+          }
+        );
+      } else {
+        toast.success(
+          `${product?.name?.substring(0, 12)} removed successfully !`
+        );
+      }
     } catch (error) {
       console.error("Remove from cart error:", error);
       toast.error("Product could not be removed from the cart");
@@ -65,7 +76,7 @@ const QuantityButtons = ({
         size="icon"
         className="w-7 h-7 border-gray-300 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
         aria-label="Reduce product quantity"
-        disabled={itemCount === 0 || isOutOfStock}
+        disabled={isOutOfStock}
         onClick={handleRemoveProduct}
       >
         <Minus size={16} />

@@ -107,7 +107,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
         {/* Price and Quantity */}
         <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
-          <PriceView price={product?.price} salePrice={product?.salePrice} />
+          <PriceView price={product?.price} salePrice={product?.salePrice} product={product} />
           {!isOutOfStock && (
             <QuantityButtons isOutOfStock={isOutOfStock} product={product} />
           )}
@@ -117,7 +117,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
         <AddCartButton
           isOutOfStock={isOutOfStock}
           product={product}
-          showIcon
           className="mt-4"
         />
       </div>
