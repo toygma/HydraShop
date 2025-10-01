@@ -12,6 +12,7 @@ import { Bars3Icon } from "@heroicons/react/24/outline";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { Button } from "../ui/button";
 import SearchBar from "../searchBar/SearchBar";
+import { useCartStore } from "@/store";
 
 export const navLinks = [
   { id: 1, title: "Home", href: "/" },
@@ -25,6 +26,7 @@ export const navLinks = [
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const itemCount = useCartStore((state) => state.items);
   const pathname = usePathname();
   const { isSignedIn } = useUser();
 
@@ -32,7 +34,6 @@ const Header = () => {
     <header className="fixed top-0 left-0 w-full bg-white/95 backdrop-blur-md z-50 shadow-lg dark:bg-gray-800/95">
       <div className="py-6 px-6 container mx-auto  items-center justify-between border-b border-gray-100 dark:border-gray-700 md:flex hidden">
         <div className=" text-gray-500 dark:text-gray-300">
-          
           <SearchBar />
         </div>
 
@@ -63,10 +64,14 @@ const Header = () => {
               className="hover:text-tertiary transition-colors duration-300 relative"
             >
               <ShoppingBag size={22} />
-              <Badge
-                children={2}
-                className="absolute -top-1.5 -right-2 bg-red-500 text-white rounded-full w-4 h-4 ring-2 ring-white dark:ring-gray-800  transform scale-90 transition duration-200"
-              />
+              {itemCount.length < 1 ? (
+                null
+              ) : (
+                <Badge
+                  children={itemCount.length}
+                  className="absolute -top-1.5 -right-2 bg-red-500 text-white rounded-full w-4 h-4 ring-2 ring-white dark:ring-gray-800  transform scale-90 transition duration-200"
+                />
+              )}
             </Link>
           </li>
           <li>
