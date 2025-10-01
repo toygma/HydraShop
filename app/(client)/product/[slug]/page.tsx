@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Heart, Bookmark, BoxIcon, Share } from "lucide-react";
 import ProductCharacteristics from "@/components/products/_components/ProductCharacteristics";
 import { productActions } from "../_components/product-action";
+import AddCartButton from "@/components/products/_components/AddCartButton";
 
 const SingleProductPage = async ({ params }: { params: { slug: string } }) => {
-  const { slug } = params;
+  const { slug } = await params;
 
   const product: Product = await getProductsBySlug(slug);
 
@@ -44,14 +45,7 @@ const SingleProductPage = async ({ params }: { params: { slug: string } }) => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 mt-4">
-            <Button
-              className="flex-grow bg-indigo-600 h-12 text-lg font-semibold 
-                         cursor-pointer hover:bg-indigo-700 
-                         transition duration-300 transform shadow-md 
-                         hover:shadow-indigo-500/40"
-            >
-              Add to Cart
-            </Button>
+            <AddCartButton className="mt-0 h-[5vh]!" product={product} />
 
             <Button
               variant="outline"

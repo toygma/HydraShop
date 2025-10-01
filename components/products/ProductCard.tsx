@@ -1,17 +1,22 @@
 "use client";
+
 import Image from "next/image";
-import { Star } from "lucide-react";
+import { Star, ShoppingBag } from "lucide-react";
 import { Product } from "@/sanity.types";
-import { Button } from "../ui/button";
 import Link from "next/link";
 import { urlFor } from "@/sanity/lib/image";
 import QuantityButtons from "./_components/QuantityButtons";
 import PriceView from "./_components/PriceView";
+import AddCartButton from "./_components/AddCartButton";
+import { Badge } from "@/components/ui/badge";
 
-const ProductCart = ({ product }: { product: Product }) => {
+interface ProductCardProps {
+  product: Product;
+}
+
+const ProductCard = ({ product }: ProductCardProps) => {
   const safeRating = Math.round(product?.rating ?? 0);
   const safeReviewsCount = product?.reviewsCount ?? 0;
-
   const productUrl = `/product/${product?.slug?.current || ""}`;
 
   const totalStock =
@@ -21,91 +26,103 @@ const ProductCart = ({ product }: { product: Product }) => {
     ) || 0;
   const isOutOfStock = totalStock <= 0;
 
-  const stockText = isOutOfStock ? "Out of stock" : "In stock";
+  if (!product) return null;
 
   return (
-    <div>
-      {product && (
-        <div
-          key={product._id}
-          className="group relative bg-white border border-gray-700 rounded-xl shadow-2xl overflow-hidden transform transition-all duration-300 hover:scale-[1.03] hover:shadow-indigo-500/50"
-        >
-          <div className="w-full h-64 bg-gray-800 flex items-center justify-center overflow-hidden relative">
-            {product?.images?.[0] && product.images[0].asset && (
-              <Link href={productUrl}>
-                <Image
-                  src={urlFor(product.images[0]).url()}
-                  width={500}
-                  height={500}
-                  alt={product?.name ?? "product image"}
-                  className={`w-full h-72 object-cover overflow-hidden transition-transform duration-500 group-hover:scale-105 ${
-                    isOutOfStock ? "opacity-50 grayscale" : ""
-                  }`}
-                />
-              </Link>
-            )}
-
-            <div
-              className={`absolute top-0 right-0 px-3 py-1 font-bold text-xs uppercase tracking-wider ${
-                isOutOfStock
-                  ? "bg-red-600 text-black"
-                  : "bg-green-500 text-gray-900"
-              } rounded-bl-lg`}
-            >
-              {stockText}
+    <div className="group relative bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-indigo-500/20 w-full">
+      {/* Image Container */}
+      <Link href={productUrl} className="block relative">
+        <div className="relative w-full h-72 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 overflow-hidden">
+          {product?.images?.[0]?.asset ? (
+            <Image
+              src={urlFor(product.images[0]).url()}
+              fill
+              alt={product?.name ?? "product image"}
+              className={`object-cover transition-transform duration-500 group-hover:scale-110 ${
+                isOutOfStock ? "opacity-40 grayscale" : ""
+              }`}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <ShoppingBag className="w-16 h-16 text-gray-400" />
             </div>
+          )}
 
-            {isOutOfStock && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
-                <span className="text-2xl font-extrabold text-white rotate-[-15deg] border-2 border-white px-4 py-2">
+          {/* Stock Badge */}
+          <Badge
+            variant={isOutOfStock ? "destructive" : "default"}
+            className={`absolute top-3 right-3 px-3 py-1 font-semibold text-xs uppercase tracking-wider shadow-lg ${
+              isOutOfStock
+                ? "bg-red-600 hover:bg-red-600"
+                : "bg-green-500 hover:bg-green-500 text-white"
+            }`}
+          >
+            {isOutOfStock ? "Out of Stock" : "In Stock"}
+          </Badge>
+
+          {/* Sold Out Overlay */}
+          {isOutOfStock && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+              <div className="relative">
+                <span className="block text-3xl font-black text-white rotate-[-12deg] border-4 border-white px-6 py-3 bg-red-600/20 backdrop-blur-sm shadow-2xl">
                   SOLD OUT
                 </span>
               </div>
-            )}
-          </div>
-
-          {/* Product Info */}
-          <div className="p-5 text-black">
-            <h3 className="text-xl font-extrabold text-indigo-400 line-clamp-1">
-              {product?.name}
-            </h3>
-            <div className="flex items-center mt-2">
-              {/* Yıldızların rengini dark mode'a uyarla */}
-              {Array.from({ length: 5 }, (_, i) => (
-                <Star
-                  key={i}
-                  size={16}
-                  fill={i < safeRating ? "#facc15" : "#374151"} // sarı ve koyu gri
-                  stroke={i < safeRating ? "#facc15" : "#4b5563"}
-                  className="mr-[2px]"
-                />
-              ))}
-              <span className="text-sm text-gray-400 ml-2">
-                ({safeReviewsCount} reviews)
-              </span>
             </div>
+          )}
 
-            <div className="flex items-center justify-between">
-              <PriceView price={product?.price} salePrice={product?.salePrice}  /> 
-              {!isOutOfStock && (
-                <div className="mt-6">
-                  <QuantityButtons />
-                </div>
-              )}
-            </div>
-
-            <Button
-              className="w-full mt-6 bg-indigo-600 cursor-pointer hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition duration-300 transform shadow-lg hover:shadow-indigo-500/40"
-              disabled={isOutOfStock}
-              onClick={() => console.log(`Adding ${product?.name} to cart`)}
-            >
-              {isOutOfStock ? "Sold Out" : "Add to cart"}
-            </Button>
-          </div>
+          {/* Hover Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
-      )}
+      </Link>
+
+      {/* Product Info */}
+      <div className="p-6 space-y-4">
+        {/* Title */}
+        <Link href={productUrl}>
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white line-clamp-2 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 min-h-[3.5rem]">
+            {product?.name}
+          </h3>
+        </Link>
+
+        {/* Rating */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center">
+            {Array.from({ length: 5 }, (_, i) => (
+              <Star
+                key={i}
+                size={18}
+                fill={i < safeRating ? "#fbbf24" : "transparent"}
+                stroke={i < safeRating ? "#fbbf24" : "#9ca3af"}
+                className="transition-colors duration-200"
+              />
+            ))}
+          </div>
+          <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+            {safeRating > 0 ? `${safeRating}.0` : "No reviews"}
+            {safeReviewsCount > 0 && ` (${safeReviewsCount})`}
+          </span>
+        </div>
+
+        {/* Price and Quantity */}
+        <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
+          <PriceView price={product?.price} salePrice={product?.salePrice} />
+          {!isOutOfStock && (
+            <QuantityButtons isOutOfStock={isOutOfStock} product={product} />
+          )}
+        </div>
+
+        {/* Add to Cart Button */}
+        <AddCartButton
+          isOutOfStock={isOutOfStock}
+          product={product}
+          showIcon
+          className="mt-4"
+        />
+      </div>
     </div>
   );
 };
 
-export default ProductCart;
+export default ProductCard;

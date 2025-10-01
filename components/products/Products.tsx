@@ -66,7 +66,7 @@ const Products = () => {
       </div>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
+      <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
         {loading ? (
           <p>
             <Loading
@@ -77,7 +77,7 @@ const Products = () => {
           </p>
         ) : products.length > 0 ? (
           products?.map((product: Product) => (
-            <div key={product?._id}>
+            <div key={product?._id} >
               <ProductCard product={product} />
             </div>
           ))

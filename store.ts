@@ -11,10 +11,11 @@ interface CartState {
   items: CartItem[];
   addItem: (product: Product) => void;
   removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  getItemCount: (productId: string) => number;
   clearCart: () => void;
   getTotalItems: () => number;
-  getTotalPrice: () => number;
+  getSubTotalPrice: () => number;
+  getItems: () => CartItem[];
 }
 
 export const useCartStore = create<CartState>()(
@@ -48,22 +49,12 @@ export const useCartStore = create<CartState>()(
           items: state.items.filter((item) => item.product._id !== productId),
         })),
 
-      updateQuantity: (productId, quantity) =>
-        set((state) => {
-          if (quantity <= 0) {
-            return {
-              items: state.items.filter(
-                (item) => item.product._id !== productId
-              ),
-            };
-          }
 
-          return {
-            items: state.items.map((item) =>
-              item.product._id === productId ? { ...item, quantity } : item
-            ),
-          };
-        }),
+      getItemCount: (productId) => {
+        const { items } = get();
+        const item = items.find((item) => item.product._id === productId);
+        return item ? item.quantity : 0;
+      },
 
       clearCart: () => set({ items: [] }),
 
@@ -72,13 +63,17 @@ export const useCartStore = create<CartState>()(
         return items.reduce((total, item) => total + item.quantity, 0);
       },
 
-      getTotalPrice: () => {
+      getSubTotalPrice: () => {
         const { items } = get();
-        return items.reduce(
-          (total, item) => total + (item.product.price || 0) * item.quantity,
-          0
-        );
+        const totalInCents = items.reduce((total, item) => {
+          const priceToUse = item.product.salePrice ?? item.product.price ?? 0;
+          return total + priceToUse * item.quantity;
+        }, 0);
+
+        return totalInCents / 100;
       },
+
+      getItems: () => get().items,
     }),
     {
       name: "cart-store",
