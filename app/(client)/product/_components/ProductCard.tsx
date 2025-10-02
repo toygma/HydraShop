@@ -109,7 +109,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <PriceView
             price={product?.price}
             salePrice={product?.salePrice}
-            product={product}
           />
         </div>
 

@@ -1,17 +1,13 @@
-import { Product } from "@/sanity.types";
-import { useCartStore } from "@/store";
+"use client";
 import { formattedPrice } from "@/utils/helper";
 
 interface Props {
   price?: any;
   salePrice?: number | null;
-  product?: Product;
 }
 
-const PriceView = ({ price, salePrice, product }: Props) => {
+const PriceView = ({ price, salePrice }: Props) => {
   const isSale = salePrice && salePrice < price;
-  const totalPrice = useCartStore((state) => state.totalPrice);
-  const totalItems = useCartStore((state) => state.totalItems);
 
   if (!price && !salePrice) return null;
 
