@@ -41,7 +41,7 @@ const TabDetail = ({ product }: { product: Product }) => {
           <PortableText value={product?.description || []} />
         )}
         {selectedTab === "reviews" && (
-          <Reviews/>
+          <Reviews product={product}/>
         )}
       </div>
     </div>
