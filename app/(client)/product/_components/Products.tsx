@@ -1,12 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Button } from "../ui/button";
+import { Button } from "../../../../components/ui/button";
 
-import HomeTabbar from "./_components/HomeTabbar";
+import HomeTabbar from "./HomeTabbar";
 import { client } from "@/sanity/lib/client";
 import ProductCard from "./ProductCard";
 import { Product } from "@/sanity.types";
-import Loading from "../custom/Loading";
+import Loading from "../../../../components/custom/Loading";
 
 const Products = () => {
   const [selectedTab, setSelectedTab] = useState("All");
@@ -77,7 +77,7 @@ const Products = () => {
           </p>
         ) : products.length > 0 ? (
           products?.map((product: Product) => (
-            <div key={product?._id} >
+            <div key={product?._id}>
               <ProductCard product={product} />
             </div>
           ))

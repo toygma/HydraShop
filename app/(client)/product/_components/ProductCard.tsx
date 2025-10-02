@@ -5,9 +5,8 @@ import { Star, ShoppingBag } from "lucide-react";
 import { Product } from "@/sanity.types";
 import Link from "next/link";
 import { urlFor } from "@/sanity/lib/image";
-import QuantityButtons from "./_components/QuantityButtons";
-import PriceView from "./_components/PriceView";
-import AddCartButton from "./_components/AddCartButton";
+import PriceView from "./PriceView";
+import AddCartButton from "./AddCartButton";
 import { Badge } from "@/components/ui/badge";
 
 interface ProductCardProps {
@@ -107,10 +106,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
         {/* Price and Quantity */}
         <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
-          <PriceView price={product?.price} salePrice={product?.salePrice} product={product} />
-          {!isOutOfStock && (
-            <QuantityButtons isOutOfStock={isOutOfStock} product={product} />
-          )}
+          <PriceView
+            price={product?.price}
+            salePrice={product?.salePrice}
+            product={product}
+          />
         </div>
 
         {/* Add to Cart Button */}

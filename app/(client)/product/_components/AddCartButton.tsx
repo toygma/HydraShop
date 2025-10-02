@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { Product } from "@/sanity.types";
 import { useCartStore } from "@/store";
 import { toast } from "sonner";
-import { ShoppingCart } from "lucide-react";
 
 interface AddCartButtonProps {
   product: Product;
@@ -19,26 +18,22 @@ const AddCartButton = ({
   isOutOfStock = false,
   className,
 }: AddCartButtonProps) => {
-  const { addItem, getItemCount } = useCartStore();
-  const itemCount = getItemCount(product?._id);
+  const addItem = useCartStore((state) => state.addItem);
+  const itemTotal = useCartStore((state)=>state.totalItems)
 
-  const handleAddToCart = () => {
-    if (!product) {
-      toast.error("Product information not found");
-      return;
-    }
-
+  const handleAddCart = () => {
     try {
-      addItem(product);
-      toast.success(`${product.name || "Product"} added to cart`, {
-        description:
-          itemCount > 0
-            ? `There are ${itemCount + 1} items in the cart`
-            : undefined,
+      addItem(product, 1);
+      
+      toast.success(`${product.name} sepete eklendi.`, {
+        description: `${itemTotal} adet ürün sepetinizde.`,
       });
-    } catch (error) {
-      console.error("Add to cart error:", error);
-      toast.error("Product could not be added to the cart");
+
+    } catch (error: any) {
+      console.error("Sepete ekleme hatası:", error);
+      toast.error("Ürün sepete eklenemedi.", {
+        description: error.message || "Bilinmeyen bir hata oluştu.",
+      });
     }
   };
 
@@ -49,7 +44,7 @@ const AddCartButton = ({
         className
       )}
       disabled={isOutOfStock || !product}
-      onClick={handleAddToCart}
+      onClick={handleAddCart}
     >
       {isOutOfStock ? "Out Of Stock" : "Add To Cart"}
     </Button>

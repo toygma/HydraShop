@@ -2,14 +2,14 @@ import { PortableText } from "@portabletext/react";
 import { getProductsBySlug } from "@/utils/helper";
 import { notFound } from "next/navigation";
 import React from "react";
-import ImageView from "../_components/ImageView";
+import ImageView from "./_components/ImageView";
 import { Product } from "@/sanity.types";
-import PriceView from "@/components/products/_components/PriceView";
+import PriceView from "@/app/(client)/product/_components/PriceView";
 import { Button } from "@/components/ui/button";
 import { Heart, Bookmark, BoxIcon, Share } from "lucide-react";
-import ProductCharacteristics from "@/components/products/_components/ProductCharacteristics";
-import { productActions } from "../_components/product-action";
-import AddCartButton from "@/components/products/_components/AddCartButton";
+import ProductCharacteristics from "@/app/(client)/product/_components/ProductCharacteristics";
+import { productActions } from "./_components/product-action";
+import AddCartButton from "@/app/(client)/product/_components/AddCartButton";
 
 const SingleProductPage = async ({ params }: { params: { slug: string } }) => {
   const { slug } = await params;

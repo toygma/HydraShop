@@ -1,108 +1,142 @@
+"use client";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
+import { toast } from "sonner";
 import { Product } from "./sanity.types";
+import { calculateTotals } from "./utils/helper";
 
-interface CartItem {
-  product: Product;
+
+export interface CartItem extends Product {
   quantity: number;
 }
 
-interface CartState {
+interface CartStore {
   items: CartItem[];
-  addItem: (product: Product) => void;
+  totalItems: number;
+  totalPrice: number;
+  addItem: (product: Product, quantity?: number) => void;
   removeItem: (productId: string) => void;
-  deleteCartProduct: (productId: string) => void;
-  getItemCount: (productId: string) => number;
+  increaseQuantity: (productId: string) => void;
+  decreaseQuantity: (productId: string) => void;
   clearCart: () => void;
-  getTotalPrice: () => number;
-  getSubTotalPrice: () => number;
-  getItems: () => CartItem[];
 }
 
-export const useCartStore = create<CartState>()(
+export const useCartStore = create<CartStore>()(
   persist(
-    (set, get) => ({
+    immer((set) => ({
       items: [],
-      addItem: (product: Product) => {
+      totalItems: 0,
+      totalPrice: 0,
+
+      addItem: (product, quantity = 1) => {
         set((state) => {
-          const existingItem = state.items.find(
-            (item) => item.product._id === product._id
-          );
+          const totalStock = 
+            product.variants?.reduce((sum, v) => sum + (v.stockQuantity ?? 0) , 0) || 0;
+
+          if (totalStock <= 0) {
+            toast.error("Bu ürünün stoğu tükenmiştir.");
+            return; 
+          }
+
+          const existingItem = state.items.find((item) => item._id === product._id);
 
           if (existingItem) {
-            return {
-              items: state.items.map((item) =>
-                item.product._id === product._id
-                  ? { ...item, quantity: item.quantity + 1 }
-                  : item
-              ),
-            };
+            const newQuantity = existingItem.quantity + quantity;
+            if (newQuantity > totalStock) {
+              toast.info(`Stok limiti aşıldı. Sepetinizdeki adet maksimum stoka (${totalStock}) güncellendi.`);
+              existingItem.quantity = totalStock;
+            } else {
+              existingItem.quantity = newQuantity;
+            }
           } else {
-            return {
-              items: [...state.items, { product, quantity: 1 }],
-            };
+            const itemQuantity = quantity > totalStock ? totalStock : quantity;
+            if (quantity > totalStock) {
+              toast.info(`Stok limiti aşıldı. Sepete maksimum ${totalStock} adet eklendi.`);
+            }
+            state.items.push({ ...product, quantity: itemQuantity });
           }
+
+          const totals = calculateTotals(state.items);
+          state.totalItems = totals.totalItems;
+          state.totalPrice = totals.totalPrice;
         });
       },
 
-      removeItem: (productId: string) => {
+      removeItem: (productId) => {
         set((state) => {
-          const existingItem = state.items.find(
-            (item) => item.product._id === productId
-          );
-
-          if (!existingItem) return { items: state.items };
-
-          if (existingItem.quantity > 1) {
-            return {
-              items: state.items.map((item) =>
-                item.product._id === productId
-                  ? { ...item, quantity: item.quantity - 1 }
-                  : item
-              ),
-            };
-          }
-
-          return {
-            items: state.items.filter((item) => item.product._id !== productId),
-          };
+          state.items = state.items.filter((item) => item._id !== productId);
+          const totals = calculateTotals(state.items);
+          state.totalItems = totals.totalItems;
+          state.totalPrice = totals.totalPrice;
         });
       },
 
-      deleteCartProduct: (productId) =>
-        set((state) => ({
-          items: state.items.filter(
-            ({ product }) => product?._id !== productId
-          ),
-        })),
-
-      clearCart: () => set({ items: [] }),
-
-      getTotalPrice: () => {
-        const { items } = get();
-        return items.reduce(
-          (total, item) => total + (item.product.price ?? 0) * item.quantity,
-          0
-        );
-      },
-      getSubTotalPrice: () => {
-        return get().items.reduce((total, item) => {
-          const price = item.product.price ?? 0;
-          const discount = ((item.product.salePrice ?? 0) * price) / 100;
-          const discountedPrice = price + discount;
-          return total + discountedPrice * item.quantity;
-        }, 0);
-      },
-      getItemCount: (productId) => {
-        const { items } = get();
-        const item = items.find((item) => item.product._id === productId);
-        return item ? item.quantity : 0;
+      increaseQuantity: (productId) => {
+        set((state) => {
+          const item = state.items.find((item) => item._id === productId);
+          if (item) {
+            // Stok SADECE variant'lardan hesaplanır.
+            const totalStock = 
+              item.variants?.reduce((sum, v) => sum + (v.stockQuantity ?? 0), 0) || 0;
+              
+            if (item.quantity >= totalStock) {
+              toast.error(`Maksimum stok limitine ulaşıldı: ${totalStock}`);
+            } else {
+              item.quantity += 1;
+            }
+            const totals = calculateTotals(state.items);
+            state.totalItems = totals.totalItems;
+            state.totalPrice = totals.totalPrice;
+          }
+        });
       },
 
-      getItems: () => get().items,
-    }),
+      decreaseQuantity: (productId) => {
+        set((state) => {
+          const item = state.items.find((item) => item._id === productId);
+          if (item) {
+            if (item.quantity <= 1) {
+              state.items = state.items.filter((i) => i._id !== productId);
+            } else {
+              item.quantity -= 1;
+            }
+            const totals = calculateTotals(state.items);
+            state.totalItems = totals.totalItems;
+            state.totalPrice = totals.totalPrice;
+          }
+        });
+      },
+
+      clearCart: () => {
+        set({ items: [], totalItems: 0, totalPrice: 0 });
+      },
+    })),
     {
-      name: "cart-store",
+      name: "cart-storage",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ items: state.items }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          const totals = calculateTotals(state.items);
+          state.totalItems = totals.totalItems;
+          state.totalPrice = totals.totalPrice;
+        }
+      },
     }
   )
 );
+
+// Diğer hook'lar aynı kalabilir...
+export const useCartItems = () => useCartStore((state) => state.items);
+export const useCartTotals = () => useCartStore((state) => ({
+    totalItems: state.totalItems,
+    totalPrice: state.totalPrice,
+}));
+export const useCartActions = () => useCartStore((state) => ({
+    addItem: state.addItem,
+    removeItem: state.removeItem,
+    increaseQuantity: state.increaseQuantity,
+    decreaseQuantity: state.decreaseQuantity,
+    clearCart: state.clearCart,
+}));
