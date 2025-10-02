@@ -23,12 +23,8 @@ const AddCartButton = ({
 
   const handleAddCart = () => {
     try {
+    
       addItem(product, 1);
-      
-      toast.success(`${product.name} sepete eklendi.`, {
-        description: `${itemTotal} adet ürün sepetinizde.`,
-      });
-
     } catch (error: any) {
       console.error("Sepete ekleme hatası:", error);
       toast.error("Ürün sepete eklenemedi.", {
