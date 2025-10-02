@@ -9,17 +9,20 @@ import { client } from "@/sanity/lib/client";
 import { ReviewFormData, reviewSchema } from "@/validation/review.schema";
 import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Edit } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import StarRatings from "react-star-ratings";
 import { toast } from "sonner";
+import EditingComment from "./EditingComment";
 
 interface ReviewsProps {
   product: Product;
 }
 const Reviews = ({ product }: ReviewsProps) => {
   const [reviews, setReviews] = useState<ProductReview[]>([]);
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [Loading, setLoading] = useState(false);
   const { user } = useUser();
 
@@ -54,6 +57,12 @@ const Reviews = ({ product }: ReviewsProps) => {
     formState: { errors, isSubmitting },
   } = form;
 
+  //USER SOME REVIEWS
+  const userHasReviewed = reviews.some(
+    (review) => review.email === user?.primaryEmailAddress?.emailAddress
+  );
+
+  //create
   const onSubmit = async (data: ReviewFormData) => {
     const apiData = {
       ...data,
@@ -125,63 +134,92 @@ const Reviews = ({ product }: ReviewsProps) => {
                   </p>
                 </div>
 
-                <div className="flex items-center">
-                  <StarRatings
-                    rating={review.rating}
-                    starRatedColor="#facc15"
-                    starEmptyColor="#e5e7eb"
-                    numberOfStars={5}
-                    starDimension="20px"
-                    starSpacing="2px"
-                    name="rating"
-                  />
-                  <span className="ml-2 text-sm font-medium text-gray-700 pt-1">
-                    {review.rating}
-                  </span>
+                <div className="flex flex-col items-end">
+                  <div className="flex items-center">
+                    <StarRatings
+                      rating={review.rating}
+                      starRatedColor="#facc15"
+                      starEmptyColor="#e5e7eb"
+                      numberOfStars={5}
+                      starDimension="20px"
+                      starSpacing="2px"
+                      name="rating"
+                    />
+                    <span className="ml-2 text-sm font-medium text-gray-700 pt-1">
+                      {review.rating}
+                    </span>
+                  </div>
+                  <div className="pt-2">
+                    <Button
+                      onClick={() =>
+                        setEditingCommentId(
+                          editingCommentId === review._id ? null : review._id
+                        )
+                      }
+                      variant={"outline"}
+                      className="cursor-pointer"
+                    >
+                      <Edit className="w-4 h-4 " />
+                    </Button>
+                  </div>
                 </div>
               </div>
-
-              {/* Yorum Metni */}
-              <p className="mt-1 text-gray-700 leading-relaxed">
-                {review.message}
-              </p>
+              <div className="mt-4">
+                {editingCommentId === review._id ? (
+                  <EditingComment
+                    commentId={review._id}
+                    onSuccess={() => setEditingCommentId(null)}
+                    review={review}
+                  />
+                ) : (
+                  <p className="mt-1 text-gray-700 leading-relaxed">
+                    {review?.message}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         ))}
         <div>
           {user ? (
-            <Form {...form}>
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="mt-12 flex flex-col gap-4"
-              >
-                <div>
-                  <FormRating
-                    name="rating"
-                    label="Rate the Product"
-                    error={errors.rating}
+            !userHasReviewed ? (
+              <Form {...form}>
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="mt-12 flex flex-col gap-4"
+                >
+                  <div>
+                    <FormRating
+                      name="rating"
+                      label="Rate the Product"
+                      error={errors.rating}
+                      form={form}
+                    />
+                  </div>
+                  <FormTextarea
+                    name="message"
+                    label="Your Message"
+                    error={errors.message}
                     form={form}
                   />
-                </div>
-                <FormTextarea
-                  name="message"
-                  label="Your Message"
-                  error={errors.message}
-                  form={form}
-                />
-                <div>
-                  <Button
-                    type="submit"
-                    variant={"default"}
-                    className="cursor-pointer"
-                    loading={isSubmitting}
-                    disabled={isSubmitting}
-                  >
-                    Send
-                  </Button>
-                </div>
-              </form>
-            </Form>
+                  <div>
+                    <Button
+                      type="submit"
+                      variant={"default"}
+                      className="cursor-pointer"
+                      loading={isSubmitting}
+                      disabled={isSubmitting}
+                    >
+                      Send
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            ) : (
+              <p className="text-gray-600 mt-4 text-2xl text-center font-semibold tracking-wide pt-4">
+                You have already submitted a review for this product.
+              </p>
+            )
           ) : (
             <div className="flex flex-col items-center justify-center px-4 py-4">
               <h1 className="text-2xl font-semibold tracking-wider leading-relaxed">

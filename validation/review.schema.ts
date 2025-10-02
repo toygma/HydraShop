@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 export const reviewSchema = z.object({
-
   rating: z
     .number({
       message: "Rating is required",

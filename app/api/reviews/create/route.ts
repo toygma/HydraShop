@@ -1,5 +1,3 @@
-// app/api/reviews/route.ts
-
 import { NextRequest, NextResponse } from "next/server";
 import { writeClient, client } from "@/sanity/lib/client";
 
@@ -32,14 +30,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // if (userEmail) {
-    //   return NextResponse.json(
-    //     { error: "Daha önce yorum yapmıştın." },
-    //     { status: 400 }
-    //   );
-    // }
-
-    // Yorum oluşturulacak belge (doc)
     const doc = {
       _type: "productReview",
       product: {
@@ -50,9 +40,8 @@ export async function POST(request: NextRequest) {
       email: userEmail,
       rating: rating,
       message: message,
-      userImageUrl: userImageUrl, // Kullanıcı resmi kaydediliyor
-      isApproved: false, // Moderasyon için varsayılan olarak Onaylanmamış
-      // Sanity otomatik olarak _createdAt ekler, manuel eklemeye gerek yok
+      userImageUrl: userImageUrl, 
+      isApproved: false,
     };
 
     // 1. Yeni Yorumu Kaydet

@@ -1,4 +1,3 @@
-import { PortableText } from "@portabletext/react";
 import { getProductsBySlug } from "@/utils/helper";
 import { notFound } from "next/navigation";
 import React from "react";
