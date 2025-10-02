@@ -1,13 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { Star, ShoppingBag } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import { Product } from "@/sanity.types";
 import Link from "next/link";
 import { urlFor } from "@/sanity/lib/image";
 import PriceView from "./PriceView";
 import AddCartButton from "./AddCartButton";
 import { Badge } from "@/components/ui/badge";
+import StarRatings from "react-star-ratings";
 
 interface ProductCardProps {
   product: Product;
@@ -88,15 +89,15 @@ const ProductCard = ({ product }: ProductCardProps) => {
         {/* Rating */}
         <div className="flex items-center gap-2">
           <div className="flex items-center">
-            {Array.from({ length: 5 }, (_, i) => (
-              <Star
-                key={i}
-                size={18}
-                fill={i < safeRating ? "#fbbf24" : "transparent"}
-                stroke={i < safeRating ? "#fbbf24" : "#9ca3af"}
-                className="transition-colors duration-200"
-              />
-            ))}
+            <StarRatings
+              rating={product?.rating}
+              starRatedColor="#facc15"
+              starEmptyColor="#e5e7eb"
+              numberOfStars={5}
+              starDimension="20px"
+              starSpacing="2px"
+              name="rating"
+            />
           </div>
           <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
             {safeRating > 0 ? `${safeRating}.0` : "No reviews"}
@@ -106,10 +107,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
         {/* Price and Quantity */}
         <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
-          <PriceView
-            price={product?.price}
-            salePrice={product?.salePrice}
-          />
+          <PriceView price={product?.price} salePrice={product?.salePrice} />
         </div>
 
         {/* Add to Cart Button */}

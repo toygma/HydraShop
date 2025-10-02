@@ -10,7 +10,7 @@ const data = [
 ];
 
 const TabDetail = ({ product }: { product: Product }) => {
-  const [selectedTab, setSelectedTab] = useState("");
+  const [selectedTab, setSelectedTab] = useState("description");
 
   return (
     <div className="w-full flex items-center justify-center flex-col">
@@ -36,7 +36,7 @@ const TabDetail = ({ product }: { product: Product }) => {
       </div>
 
       {/* Tab Content */}
-      <div className="w-full text-gray-700 leading-relaxed text-base flex flex-col items-center justify-center mt-12 gap-4">
+      <div className="w-full text-gray-700 leading-relaxed text-base flex flex-col container mx-auto mt-12 gap-4">
         {selectedTab === "description" && (
           <PortableText value={product?.description || []} />
         )}

@@ -1,13 +1,13 @@
 "use client";
 
-import FormInput from "@/components/inputs/FormInput";
 import FormRating from "@/components/inputs/RatingInput";
 import FormTextarea from "@/components/inputs/TextArea";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Product, ProductReview } from "@/sanity.types";
-import {  client } from "@/sanity/lib/client";
+import { client } from "@/sanity/lib/client";
 import { ReviewFormData, reviewSchema } from "@/validation/review.schema";
+import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -21,12 +21,11 @@ interface ReviewsProps {
 const Reviews = ({ product }: ReviewsProps) => {
   const [reviews, setReviews] = useState<ProductReview[]>([]);
   const [Loading, setLoading] = useState(false);
+  const { user } = useUser();
 
   const form = useForm<ReviewFormData>({
     resolver: zodResolver(reviewSchema),
     defaultValues: {
-      name: "",
-      email: "",
       message: "",
       rating: 0,
     },
@@ -56,34 +55,39 @@ const Reviews = ({ product }: ReviewsProps) => {
   } = form;
 
   const onSubmit = async (data: ReviewFormData) => {
-     try {
-      const response = await fetch('/api/reviews', {
-        method: 'POST',
+    const apiData = {
+      ...data,
+      productId: product._id,
+      userName: user?.fullName,
+      userEmail: user?.primaryEmailAddress?.emailAddress,
+      userImageUrl: user?.imageUrl,
+    };
+    try {
+      const response = await fetch("/api/reviews/create", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ...data,
-          productId: product._id,
-        }),
-      })
+        body: JSON.stringify(apiData),
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'Yorum gönderilemedi')
+        throw new Error(result.error || "Yorum gönderilemedi");
       }
 
       toast.success(
         "Your comment has been successfully submitted. It will be published after approval."
       );
-      
+
       form.reset();
     } catch (error: any) {
-      toast.error(error.message || "Comment could not be sent. Please try again.");
+      toast.error(
+        error.message || "Comment could not be sent. Please try again."
+      );
     }
   };
-
 
   return (
     <div className="border-t w-full container mx-auto p-4 sm:p-6 lg:p-8">
@@ -96,9 +100,7 @@ const Reviews = ({ product }: ReviewsProps) => {
           <div className="flex flex-col sm:flex-row items-start gap-6 py-6 border-b border-gray-100 hover:bg-gray-50 transition duration-300 rounded-lg p-3 -m-3">
             <div className="flex flex-col items-center min-w-[100px]">
               <Image
-                src={
-                  "https://robohash.org/b544f4c4e77d4a7037e384c42ecdc322?set=set4&bgset=&size=400x400"
-                }
+                src={`https://robohash.org/${review._id}?set=set4&bgset=&size=400x400`}
                 alt={`${review.name} profile`}
                 width={80}
                 height={80}
@@ -147,56 +149,46 @@ const Reviews = ({ product }: ReviewsProps) => {
           </div>
         ))}
         <div>
-          <Form {...form}>
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="mt-12 flex flex-col gap-4"
-            >
-              <div>
-                <FormRating
-                  name="rating"
-                  label="Rate the Product"
-                  error={errors.rating}
+          {user ? (
+            <Form {...form}>
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="mt-12 flex flex-col gap-4"
+              >
+                <div>
+                  <FormRating
+                    name="rating"
+                    label="Rate the Product"
+                    error={errors.rating}
+                    form={form}
+                  />
+                </div>
+                <FormTextarea
+                  name="message"
+                  label="Your Message"
+                  error={errors.message}
                   form={form}
                 />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <FormInput
-                  name="name"
-                  label="Your Name"
-                  error={errors.name}
-                  form={form}
-                  type="text"
-                  className="w-full bg-transparent"
-                />
-                <FormInput
-                  name="email"
-                  label="Your Email"
-                  error={errors.email}
-                  form={form}
-                  type="text"
-                  className="w-full bg-transparent"
-                />
-              </div>
-              <FormTextarea
-                name="message"
-                label="Your Message"
-                error={errors.message}
-                form={form}
-              />
-              <div>
-                <Button
-                  type="submit"
-                  variant={"default"}
-                  className="cursor-pointer"
-                  loading={isSubmitting}
-                  disabled={isSubmitting}
-                >
-                  Send
-                </Button>
-              </div>
-            </form>
-          </Form>
+                <div>
+                  <Button
+                    type="submit"
+                    variant={"default"}
+                    className="cursor-pointer"
+                    loading={isSubmitting}
+                    disabled={isSubmitting}
+                  >
+                    Send
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          ) : (
+            <div className="flex flex-col items-center justify-center px-4 py-4">
+              <h1 className="text-2xl font-semibold tracking-wider leading-relaxed">
+                Please log in to comment.
+              </h1>
+            </div>
+          )}
         </div>
       </div>
     </div>

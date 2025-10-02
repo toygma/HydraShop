@@ -85,6 +85,13 @@
         },
         "optional": true
       },
+      "userImageUrl": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "message": {
         "type": "objectAttribute",
         "value": {

@@ -42,6 +42,13 @@ export const reviewType = defineType({
     }),
 
     defineField({
+      name: "userImageUrl", 
+      title: "User Image",
+      type: "string", 
+      validation: (Rule) => Rule.required(),
+    }),
+
+    defineField({
       name: "message",
       title: "Review Message",
       type: "text",

@@ -28,6 +28,7 @@ export type ProductReview = {
   rating?: number;
   name?: string;
   email?: string;
+  userImageUrl?: string;
   message?: string;
   isApproved?: boolean;
   createdAt?: string;

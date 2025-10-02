@@ -35,7 +35,7 @@ const CartPage = () => {
                       <td className="py-4 px-4 flex items-center gap-4">
                         {item.images && item.images.length > 0 && (
                           <Image
-                            src={urlFor(images).url()}
+                            src={urlFor(item.images[0]).url()}
                             alt="Product"
                             width={500}
                             height={500}
