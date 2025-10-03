@@ -7,15 +7,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 });
 
 export async function POST(req: NextRequest) {
-  const { items, metadata, totalPrice, taxPrice, shippingPrice, overallTotal } =
-    await req.json();
+  const { items, metadata, totalPrice, shippingPrice } = await req.json();
 
   if (!items || items.length === 0) {
     return NextResponse.json({ error: "No items in cart" }, { status: 400 });
   }
 
   try {
-    // Ürün line items
     const lineItems = items.map((item: any) => ({
       price_data: {
         currency: "usd",
@@ -29,37 +27,8 @@ export async function POST(req: NextRequest) {
       quantity: item.quantity,
     }));
 
-    // Kargo ücreti ekleme (sadece 0'dan büyükse)
-    if (shippingPrice > 0) {
-      lineItems.push({
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: "Shipping Fee",
-            description: "Standard shipping (5-7 business days)",
-          },
-          unit_amount: Math.round(shippingPrice * 100),
-        },
-        quantity: 1,
-      });
-    }
-
-    // Vergi ücreti ekleme
-    if (taxPrice > 0) {
-      lineItems.push({
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: "Tax",
-            description: "Sales tax (20%)",
-          },
-          unit_amount: Math.round(taxPrice * 100),
-        },
-        quantity: 1,
-      });
-    }
-
-    const session = await stripe.checkout.sessions.create({
+    // Stripe session ayarları
+    const sessionConfig: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
@@ -71,12 +40,46 @@ export async function POST(req: NextRequest) {
         customerEmail: metadata.customerEmail,
         clerkUserId: metadata.clerkUserId,
         totalPrice: totalPrice.toString(),
-        taxPrice: taxPrice.toString(),
         shippingPrice: shippingPrice.toString(),
-        overallTotal: overallTotal.toString(),
       },
       customer_email: metadata.customerEmail,
-    });
+      invoice_creation: {
+        enabled: true,
+        invoice_data: {
+          description: `Order #${metadata.orderNumber}`,
+          metadata: {
+            orderNumber: metadata.orderNumber,
+          },
+        },
+      },
+    };
+
+    if (shippingPrice > 0) {
+      sessionConfig.shipping_options = [
+        {
+          shipping_rate_data: {
+            type: "fixed_amount",
+            fixed_amount: {
+              amount: Math.round(shippingPrice * 100),
+              currency: "usd",
+            },
+            display_name: "Standard Shipping",
+            delivery_estimate: {
+              minimum: {
+                unit: "business_day",
+                value: 5,
+              },
+              maximum: {
+                unit: "business_day",
+                value: 7,
+              },
+            },
+          },
+        },
+      ];
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     return NextResponse.json({ url: session.url });
   } catch (error: any) {

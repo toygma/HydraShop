@@ -68,12 +68,11 @@ export const calculateTotals = (items: CartItem[]) => {
     }
   }
 
-  const overallTotal = totalPrice + taxPrice + shippingPrice;
+  const overallTotal = totalPrice  + shippingPrice;
 
   return {
     totalItems, // Toplam ürün adedi
     totalPrice, // Ürünlerin vergisiz toplam fiyatı
-    taxPrice, // Hesaplanan vergi fiyatı
     shippingPrice, // Kargo ücreti
     overallTotal, // Genel Toplam Fiyat (Vergi ve Kargo dahil)
   };

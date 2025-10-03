@@ -14,7 +14,7 @@ import { useUser } from "@clerk/nextjs";
 const CartPage = () => {
   const totalItems = useCartStore((state) => state.items);
   const removeItem = useCartStore((state) => state.removeItem);
-  const { totalPrice, taxPrice, shippingPrice, overallTotal } =
+  const { totalPrice, shippingPrice, overallTotal } =
     calculateTotals(totalItems);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -55,9 +55,7 @@ const CartPage = () => {
           items,
           metadata,
           totalPrice,
-          taxPrice,
           shippingPrice,
-          overallTotal,
         }),
       });
       const data = await response.json();
@@ -235,12 +233,6 @@ const CartPage = () => {
                     <span>Shipping</span>
                     <span className="font-medium text-gray-900">
                       {formattedPrice(shippingPrice)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm text-gray-600">
-                    <span>Tax</span>
-                    <span className="font-medium text-gray-900">
-                      {formattedPrice(taxPrice)}
                     </span>
                   </div>
                 </div>

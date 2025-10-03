@@ -83,14 +83,23 @@ async function createOrderInsanity(
     expand: ["data.price.product"],
   });
 
-  const sanityProducts = lineItems.data.map((item) => ({
-    _key: crypto.randomUUID(),
-    product: {
-      _type: "object",
-      _ref: (item.price?.product as Stripe.Product)?.metadata.id,
-    },
-    quantity: item.quantity,
-  }));
+  const sanityProducts = lineItems.data
+    .map((item) => {
+      console.log("🚀 ~ createOrderInsanity ~ item:", item)
+      return {
+        _key: crypto.randomUUID(),
+        product: {
+          _type: "reference",
+          _ref: (item?.price?.product as Stripe.Product)?.metadata.productId,
+        },
+        quantity: item.quantity,
+      };
+    })
+    .filter(Boolean);
+
+  if (sanityProducts.length === 0) {
+    throw new Error("No valid products with Sanity ID found in the order.");
+  }
 
   const order = await writeClient.create({
     _type: "order",
