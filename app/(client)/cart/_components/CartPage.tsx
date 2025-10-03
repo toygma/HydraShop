@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { Trash } from "lucide-react";
 import Image from "next/image";
 import QuantityButtons from "../../product/_components/QuantityButtons";
@@ -7,12 +8,75 @@ import { urlFor } from "@/sanity/lib/image";
 import { calculateTotals, formattedPrice } from "@/utils/helper";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { useUser } from "@clerk/nextjs";
 
 const CartPage = () => {
   const totalItems = useCartStore((state) => state.items);
   const removeItem = useCartStore((state) => state.removeItem);
   const { totalPrice, taxPrice, shippingPrice, overallTotal } =
     calculateTotals(totalItems);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { user } = useUser();
+
+  const handleCheckOut = async () => {
+    if (!user) {
+      toast.error("Please sign in to checkout");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const items = totalItems.map((item) => ({
+        _id: item._id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        image:
+          item.images && item.images.length > 0
+            ? urlFor(item.images[0]).url()
+            : null,
+      }));
+
+      const metadata = {
+        orderNumber: crypto.randomUUID(),
+        customerName: user?.fullName ?? "Unknown",
+        customerEmail: user?.primaryEmailAddress?.emailAddress ?? "Unknown",
+        clerkUserId: user?.id,
+      };
+
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          items,
+          metadata,
+          totalPrice,
+          taxPrice,
+          shippingPrice,
+          overallTotal,
+        }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Checkout failed");
+      }
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL received");
+      }
+    } catch (error: any) {
+      toast.error("Checkout on process", error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen mt-60 pb-12 px-4 sm:px-6 lg:px-8">
@@ -27,7 +91,8 @@ const CartPage = () => {
                     Shopping Cart
                   </h1>
                   <p className="text-sm text-gray-500 mt-1">
-                    {totalItems.length} {totalItems.length === 1 ? 'item' : 'items'}
+                    {totalItems.length}{" "}
+                    {totalItems.length === 1 ? "item" : "items"}
                   </p>
                 </div>
 
@@ -54,7 +119,10 @@ const CartPage = () => {
                       {totalItems.map((item) => {
                         const itemSubtotal = (item.price ?? 0) * item.quantity;
                         return (
-                          <tr key={item._id} className="hover:bg-gray-50 transition-colors">
+                          <tr
+                            key={item._id}
+                            className="hover:bg-gray-50 transition-colors"
+                          >
                             <td className="py-4 px-4">
                               <div className="flex items-center gap-4">
                                 {item.images && item.images.length > 0 && (
@@ -87,7 +155,7 @@ const CartPage = () => {
                             <td className="py-4 px-4">
                               <div className="flex justify-center">
                                 <Button
-                                variant={"outline"}
+                                  variant={"outline"}
                                   className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-colors"
                                   onClick={() => removeItem(item._id)}
                                   aria-label="Remove item"
@@ -186,8 +254,12 @@ const CartPage = () => {
                     </span>
                   </div>
                 </div>
-                <Button className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 shadow-sm">
-                  Proceed to Checkout
+                <Button
+                  className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={handleCheckOut}
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Processing..." : "Proceed to Checkout"}
                 </Button>
               </div>
             </div>

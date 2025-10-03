@@ -28,7 +28,6 @@ const VerifyEmailPage = () => {
         toast.success("Email verified!");
         router.push("/");
       } else {
-        console.log(result);
         toast.error("Unexpected verification status. Please try again.");
       }
     } catch (err: any) {

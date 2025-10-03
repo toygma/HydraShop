@@ -139,7 +139,7 @@ const CategoryProducts = ({ categories, slug }: Props) => {
               {/* Ürün Grid Placeholder */}
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {products.map((product) => (
-                  <CategoryMain product={product}/>
+                  <CategoryMain product={product} />
                 ))}
               </div>
             </div>

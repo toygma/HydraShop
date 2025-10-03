@@ -6,6 +6,7 @@ import { formattedPrice, isOutStockControl } from "@/utils/helper";
 import { ShoppingBag } from "lucide-react";
 import { toPlainText } from "next-sanity";
 import AddCartButton from "@/app/(client)/product/_components/AddCartButton";
+import Link from "next/link";
 
 interface Props {
   product: Product;
@@ -18,7 +19,7 @@ const CategoryMain = ({ product }: Props) => {
 
   return (
     <div className="group bg-slate-50 rounded-xl p-6 border border-slate-200 hover:shadow-xl hover:border-slate-300 transition-all duration-300 cursor-pointer">
-      <div className="bg-gradient-to-br from-slate-200 to-slate-300 rounded-lg h-48 mb-4 flex items-center justify-center">
+      <Link href={`/product/${product?.slug?.current}`} className="bg-gradient-to-br from-slate-200 to-slate-300 rounded-lg h-48 mb-4 flex items-center justify-center">
         {product?.images?.[0]?.asset ? (
           <Image
             src={urlFor(product.images[0]).url()}
@@ -32,7 +33,7 @@ const CategoryMain = ({ product }: Props) => {
             <ShoppingBag className="w-16 h-16 text-gray-400" />
           </div>
         )}
-      </div>
+      </Link>
       <h3 className="font-semibold text-lg text-slate-900 mb-2 group-hover:text-slate-700 transition-colors">
         {product.name}
       </h3>

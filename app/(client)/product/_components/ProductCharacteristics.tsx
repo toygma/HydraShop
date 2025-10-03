@@ -25,7 +25,6 @@ const ProductCharacteristics = ({ product }: { product: Product }) => {
     { label: "SKU", value: variantSkus },
     { label: "Total Stock", value: variantStocks },
   ];
-  console.log("🚀 ~ ProductCharacteristics ~ variantColors:", variantColors)
 
   const headerText = product?.name
     ? `${product.name} Characteristics`

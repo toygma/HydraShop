@@ -20,6 +20,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const safeReviewsCount = product?.reviewsCount ?? 0;
   const productUrl = `/product/${product?.slug?.current || ""}`;
 
+  const isOutOfStock = isOutStockControl(product)
+
   if (!product) return null;
 
   return (
@@ -106,7 +108,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
         {/* Add to Cart Button */}
         <AddCartButton
-          isOutOfStock={isOutStockControl(product)}
+          isOutOfStock={isOutOfStock}
           product={product}
           className="mt-4"
         />
