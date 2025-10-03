@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { Product } from "@/sanity.types";
 import { urlFor } from "@/sanity/lib/image";
-import { formattedPrice } from "@/utils/helper";
+import { formattedPrice, isOutStockControl } from "@/utils/helper";
 import { ShoppingBag } from "lucide-react";
 import { toPlainText } from "next-sanity";
 import AddCartButton from "@/app/(client)/product/_components/AddCartButton";
@@ -15,14 +15,6 @@ const CategoryMain = ({ product }: Props) => {
   const shortDescription = product?.description
     ? toPlainText(product.description).slice(0, 50) + "..."
     : "";
-
-  //out stock
-  const totalStock =
-    product?.variants?.reduce(
-      (sum, item) => sum + (item.stockQuantity || 0),
-      0
-    ) || 0;
-  const isOutOfStock = totalStock <= 0;
 
   return (
     <div className="group bg-slate-50 rounded-xl p-6 border border-slate-200 hover:shadow-xl hover:border-slate-300 transition-all duration-300 cursor-pointer">
@@ -52,7 +44,7 @@ const CategoryMain = ({ product }: Props) => {
         </span>
         <AddCartButton
           product={product}
-          isOutOfStock={isOutOfStock}
+          isOutOfStock={isOutStockControl(product)}
           className="bg-slate-900 hover:bg-slate-800 rounded-lg w-fit"
         />
       </div>

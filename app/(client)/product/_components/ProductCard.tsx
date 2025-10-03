@@ -9,6 +9,7 @@ import PriceView from "./PriceView";
 import AddCartButton from "./AddCartButton";
 import { Badge } from "@/components/ui/badge";
 import StarRatings from "react-star-ratings";
+import { isOutStockControl } from "@/utils/helper";
 
 interface ProductCardProps {
   product: Product;
@@ -18,13 +19,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const safeRating = Math.round(product?.rating ?? 0);
   const safeReviewsCount = product?.reviewsCount ?? 0;
   const productUrl = `/product/${product?.slug?.current || ""}`;
-
-  const totalStock =
-    product?.variants?.reduce(
-      (sum, item) => sum + (item.stockQuantity || 0),
-      0
-    ) || 0;
-  const isOutOfStock = totalStock <= 0;
 
   if (!product) return null;
 
@@ -112,7 +106,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
         {/* Add to Cart Button */}
         <AddCartButton
-          isOutOfStock={isOutOfStock}
+          isOutOfStock={isOutStockControl(product)}
           product={product}
           className="mt-4"
         />

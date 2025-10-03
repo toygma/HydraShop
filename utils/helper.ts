@@ -2,6 +2,7 @@ import { sanityFetch } from "@/sanity/lib/live";
 import { CartItem } from "@/store";
 import { defineQuery } from "next-sanity";
 import moment from "moment";
+import { Product } from "@/sanity.types";
 
 export const formattedPrice = (price: number | undefined | null): string => {
   const formattedPrice = new Number(price).toLocaleString("en-US", {
@@ -79,6 +80,16 @@ export const calculateTotals = (items: CartItem[]) => {
 };
 
 export const formatDateLocal = (date: string | Date) => {
-   if (!date) return "";
+  if (!date) return "";
   return moment(date).fromNow();
+};
+
+export const isOutStockControl = (product: Product) => {
+  const totalStock =
+    product?.variants?.reduce(
+      (sum, item) => sum + (item.stockQuantity || 0),
+      0
+    ) || 0;
+  const isOutOfStock = totalStock <= 0;
+  return isOutOfStock;
 };
