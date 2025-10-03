@@ -1,18 +1,19 @@
 import Link from "next/link";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { navLinks } from "../Header"; // navLinks'in Header'dan geldiğini varsayarak
 import { CiUser } from "react-icons/ci";
 import { ShoppingBag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { MdDarkMode } from "react-icons/md";
 import { UserButton, useUser } from "@clerk/nextjs";
+import { Category } from "@/sanity.types";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  category: Category[];
 }
 
-const MobileMenu = ({ isOpen, onClose }: Props) => {
+const MobileMenu = ({ isOpen, onClose, category }: Props) => {
   const { isSignedIn } = useUser();
 
   return (
@@ -47,10 +48,10 @@ const MobileMenu = ({ isOpen, onClose }: Props) => {
           {" "}
           <ul className="space-y-2">
             {" "}
-            {navLinks.map((item) => (
-              <li key={item.id}>
+            {category.map((cat) => (
+              <li key={cat._id}>
                 <Link
-                  href={item.href}
+                  href={`/category/${cat?.slug?.current}`}
                   onClick={onClose}
                   className="
                     block p-3 text-lg font-medium text-gray-700 dark:text-gray-200 
@@ -58,7 +59,7 @@ const MobileMenu = ({ isOpen, onClose }: Props) => {
                     rounded-lg transition duration-150
                   "
                 >
-                  {item.title}
+                  {cat.title}
                 </Link>
               </li>
             ))}
@@ -67,7 +68,7 @@ const MobileMenu = ({ isOpen, onClose }: Props) => {
 
         <div className="p-4 border-t border-gray-200 dark:border-gray-700">
           <ul className="flex items-center justify-around text-gray-600 dark:text-gray-300">
-            <li >
+            <li>
               <li>
                 {isSignedIn ? (
                   <UserButton />

@@ -1,6 +1,7 @@
 import { sanityFetch } from "@/sanity/lib/live";
 import { CartItem } from "@/store";
 import { defineQuery } from "next-sanity";
+import moment from "moment";
 
 export const formattedPrice = (price: number | undefined | null): string => {
   const formattedPrice = new Number(price).toLocaleString("en-US", {
@@ -27,6 +28,21 @@ export const getProductsBySlug = async (slug: string) => {
     return product?.data || null;
   } catch (error) {
     console.log("Error fetching slug", error);
+  }
+};
+
+export const getAllCategories = async () => {
+  const CATEGORIES_QUERY = defineQuery(
+    `*[_type=="category"] | order(name asc)`
+  );
+
+  try {
+    const categories = await sanityFetch({
+      query: CATEGORIES_QUERY,
+    });
+    return categories.data || [];
+  } catch (error: any) {
+    console.log(error.message);
   }
 };
 
@@ -60,4 +76,9 @@ export const calculateTotals = (items: CartItem[]) => {
     shippingPrice, // Kargo ücreti
     overallTotal, // Genel Toplam Fiyat (Vergi ve Kargo dahil)
   };
+};
+
+export const formatDateLocal = (date: string | Date) => {
+   if (!date) return "";
+  return moment(date).fromNow();
 };

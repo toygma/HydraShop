@@ -16,6 +16,7 @@ import { useForm } from "react-hook-form";
 import StarRatings from "react-star-ratings";
 import { toast } from "sonner";
 import EditingComment from "./EditingComment";
+import { formatDateLocal } from "@/utils/helper";
 
 interface ReviewsProps {
   product: Product;
@@ -130,7 +131,7 @@ const Reviews = ({ product }: ReviewsProps) => {
                     •
                   </span>
                   <p className="text-xs text-gray-500 hidden sm:inline-block">
-                    {review.createdAt}
+                    {formatDateLocal(review._createdAt)}
                   </p>
                 </div>
 
@@ -164,7 +165,7 @@ const Reviews = ({ product }: ReviewsProps) => {
                   </div>
                 </div>
               </div>
-              <div className="mt-4">
+              <div className="">
                 {editingCommentId === review._id ? (
                   <EditingComment
                     commentId={review._id}
@@ -172,7 +173,7 @@ const Reviews = ({ product }: ReviewsProps) => {
                     review={review}
                   />
                 ) : (
-                  <p className="mt-1 text-gray-700 leading-relaxed">
+                  <p className=" text-gray-700 leading-relaxed">
                     {review?.message}
                   </p>
                 )}
