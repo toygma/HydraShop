@@ -21,7 +21,8 @@ export async function PATCH(request: NextRequest) {
 
     const existingReview = await client.fetch(
       `*[_type == "productReview" && _id == $reviewId][0]`,
-      { reviewId }
+      { reviewId },
+      { next: { revalidate: 0 } }
     );
 
     const product = await client.fetch(
@@ -46,9 +47,13 @@ export async function PATCH(request: NextRequest) {
       const productId = existingReview.product._ref;
 
       const approvedReviewsQuery = `*[_type == "productReview" && product._ref == $productId && isApproved == true]`;
-      const allApprovedReviews = await client.fetch(approvedReviewsQuery, {
-        productId,
-      });
+      const allApprovedReviews = await client.fetch(
+        approvedReviewsQuery,
+        {
+          productId,
+        },
+        { next: { revalidate: 0 } }
+      );
 
       const totalReviews = allApprovedReviews.length;
       const sumOfRatings = allApprovedReviews.reduce(

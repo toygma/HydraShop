@@ -6,7 +6,7 @@ export const client = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: true, // Okuma için CDN kullanılabilir
+  useCdn: process.env.NODE_ENV === "production" ? false : true,
 });
 
 // Yazma işlemleri için (SADECE server-side)
@@ -14,6 +14,6 @@ export const writeClient = createClient({
   projectId,
   dataset,
   apiVersion,
-  useCdn: false,
+  useCdn: process.env.NODE_ENV === "production" ? false : true,
   token: token, // Token sadece burada
 });
