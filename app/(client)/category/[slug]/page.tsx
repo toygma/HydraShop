@@ -1,7 +1,13 @@
-import { getAllCategories } from "@/utils/helper";
+import dynamic from "next/dynamic";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import CategoryProducts from "./_components/CategoryProducts";
+import { Suspense } from "react";
+import { getAllCategories } from "@/utils/helper";
+import Loading from "@/components/custom/Loading";
+
+const CategoryProducts = dynamic(
+  () => import("./_components/CategoryProducts")
+);
 
 // Extract Params type
 type Props = {
@@ -56,7 +62,9 @@ const CategoryPage = async ({ params }: Props) => {
         {slug && slug}
       </span>
       <div>
-        <CategoryProducts categories={categories} slug={slug}/>
+        <Suspense fallback={<Loading fullScreen size={40} />}>
+          <CategoryProducts categories={categories} slug={slug} />
+        </Suspense>
       </div>
     </div>
   );

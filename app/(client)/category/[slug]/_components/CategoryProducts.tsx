@@ -4,7 +4,10 @@ import { Category, Product } from "@/sanity.types";
 import { client } from "@/sanity/lib/client";
 import { useEffect, useState } from "react";
 import CategoryMain from "./CategoryMain";
-import Loading from "@/components/custom/Loading";
+import { ProductsSkeletonGrid } from "@/components/skeleton/SkeletonCard";
+
+
+
 
 interface Props {
   categories: Category[];
@@ -138,11 +141,16 @@ const CategoryProducts = ({ categories, slug }: Props) => {
               </div>
 
               {/* Ürün Grid Placeholder */}
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="w-full">
+                {" "}
                 {loading ? (
-                  <Loading fullScreen size={40}/>
+                  <ProductsSkeletonGrid count={4} />
                 ) : (
-                  products.map((product) => <CategoryMain key={product._id} product={product} />)
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {products.map((product) => (
+                      <CategoryMain key={product._id} product={product} />
+                    ))}
+                  </div>
                 )}
               </div>
             </div>

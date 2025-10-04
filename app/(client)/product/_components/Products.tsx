@@ -6,7 +6,7 @@ import HomeTabbar from "./HomeTabbar";
 import { client } from "@/sanity/lib/client";
 import ProductCard from "./ProductCard";
 import { Product } from "@/sanity.types";
-import Loading from "../../../../components/custom/Loading";
+import { ProductsSkeletonGrid } from "@/components/skeleton/SkeletonCard";
 
 const Products = () => {
   const [selectedTab, setSelectedTab] = useState("All");
@@ -66,25 +66,17 @@ const Products = () => {
       </div>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
-        {loading ? (
-          <p>
-            <Loading
-              fullScreen
-              size={50}
-              className="flex items-center justify-center min-h-screen"
-            />
-          </p>
-        ) : products.length > 0 ? (
-          products?.map((product: Product) => (
-            <div key={product?._id}>
-              <ProductCard product={product} />
-            </div>
-          ))
-        ) : (
-          <p>No Products</p>
-        )}
-      </div>
+      <>
+       {loading ? (
+        <ProductsSkeletonGrid count={8} />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+          {products.map((product) => (
+            <ProductCard key={product._id} product={product} />
+          ))}
+        </div>
+      )}
+      </>
     </section>
   );
 };
