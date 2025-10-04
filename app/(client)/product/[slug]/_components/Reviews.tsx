@@ -108,7 +108,10 @@ const Reviews = ({ product }: ReviewsProps) => {
         </h1>
 
         {reviews.map((review) => (
-          <div key={review._id} className="flex flex-col sm:flex-row items-start gap-6 py-6 border-b border-gray-100 hover:bg-gray-50 transition duration-300 rounded-lg p-3 -m-3">
+          <div
+            key={review._id}
+            className="flex flex-col sm:flex-row items-start gap-6 py-6 border-b border-gray-100 hover:bg-gray-50 transition duration-300 rounded-lg p-3 -m-3"
+          >
             <div className="flex flex-col items-center min-w-[100px]">
               <Image
                 src={`https://robohash.org/${review._id}?set=set4&bgset=&size=400x400`}
@@ -154,19 +157,24 @@ const Reviews = ({ product }: ReviewsProps) => {
                         {review.rating}
                       </span>
                     </div>
-                    <div className="pt-2">
-                      <Button
-                        onClick={() =>
-                          setEditingCommentId(
-                            editingCommentId === review._id ? null : review._id
-                          )
-                        }
-                        variant={"outline"}
-                        className="cursor-pointer"
-                      >
-                        <Edit className="w-4 h-4 " />
-                      </Button>
-                    </div>
+                    {review.email ===
+                      user?.primaryEmailAddress?.emailAddress && (
+                      <div className="pt-2">
+                        <Button
+                          onClick={() =>
+                            setEditingCommentId(
+                              editingCommentId === review._id
+                                ? null
+                                : review._id
+                            )
+                          }
+                          variant={"outline"}
+                          className="cursor-pointer"
+                        >
+                          <Edit className="w-4 h-4 " />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="">
