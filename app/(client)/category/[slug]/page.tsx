@@ -2,8 +2,8 @@ import dynamic from "next/dynamic";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { getAllCategories } from "@/utils/helper";
 import Loading from "@/components/custom/Loading";
+import { getAllCategories } from "@/sanity/helper";
 
 const CategoryProducts = dynamic(
   () => import("./_components/CategoryProducts")

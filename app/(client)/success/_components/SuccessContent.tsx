@@ -43,10 +43,10 @@ const SuccessContent = () => {
 
         <div className="space-y-4 sm:space-y-0 sm:flex sm:justify-center sm:space-x-4">
           <Link
-            href="/"
+            href="/orders"
             className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
           >
-            Continue Shopping
+            Continue Orders
           </Link>
         </div>
 

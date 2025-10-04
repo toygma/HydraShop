@@ -15,7 +15,7 @@ const Home = () => {
         <Hero />
       </Suspense>
 
-      <Suspense fallback={<Loading fullScreen size={40} />}>
+      <Suspense>
         <Products />
       </Suspense>
     </div>

@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import { getProductsBySlug } from "@/utils/helper";
 import { notFound } from "next/navigation";
 import ImageView from "./_components/ImageView";
 import { Product } from "@/sanity.types";
@@ -10,6 +9,7 @@ import ProductCharacteristics from "@/app/(client)/product/_components/ProductCh
 import { productActions } from "./_components/product-action";
 import AddCartButton from "@/app/(client)/product/_components/AddCartButton";
 import TabDetail from "./_components/TabDetail";
+import { getProductsBySlug } from "@/sanity/helper";
 
 type Props = {
   params: Promise<{ slug: string }>;

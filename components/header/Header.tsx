@@ -1,4 +1,4 @@
-import { getAllCategories } from "@/utils/helper";
+import { getAllCategories } from "@/sanity/helper";
 import HeaderMenu from "./_components/HeaderMenu";
 
 const Header = async () => {

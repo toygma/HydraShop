@@ -6,11 +6,10 @@ import QuantityButtons from "../../product/_components/QuantityButtons";
 import { useCartStore } from "@/store";
 import { urlFor } from "@/sanity/lib/image";
 import { calculateTotals, formattedPrice } from "@/utils/helper";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
-
+import EmptyCart from "./EmpytCart";
 const CartPage = () => {
   const totalItems = useCartStore((state) => state.items);
   const removeItem = useCartStore((state) => state.removeItem);
@@ -258,36 +257,9 @@ const CartPage = () => {
           </div>
         ) : (
           // Empty Cart State
-          <div className="flex flex-col items-center justify-center text-center py-12 sm:py-16">
-            <div className="bg-gray-50 rounded-full p-6 sm:p-8 mb-6">
-              <svg
-                className="w-16 h-16 sm:w-20 sm:h-20 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                />
-              </svg>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-              Your Cart is Empty
-            </h1>
-            <p className="text-base sm:text-lg text-gray-500 mb-8 max-w-md">
-              Looks like you haven&apos;t added anything to your cart yet
-            </p>
-            <Link
-              href="/"
-              className="bg-gray-900 hover:bg-gray-800 text-white font-medium py-3 px-8 rounded-lg shadow-sm transition-colors duration-200"
-            >
-              Start Shopping
-            </Link>
-          </div>
+          <>
+            <EmptyCart />
+          </>
         )}
       </div>
     </div>

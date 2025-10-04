@@ -1,6 +1,5 @@
-import { sanityFetch } from "@/sanity/lib/live";
+
 import { CartItem } from "@/store";
-import { defineQuery } from "next-sanity";
 import moment from "moment";
 import { Product } from "@/sanity.types";
 
@@ -14,38 +13,7 @@ export const formattedPrice = (price: number | undefined | null): string => {
   return formattedPrice;
 };
 
-export const getProductsBySlug = async (slug: string) => {
-  const PRODUCT_BY_SLUG_QUERY = defineQuery(
-    `*[_type == 'product' && slug.current == $slug] | order(name asc) [0]`
-  );
 
-  try {
-    const product = await sanityFetch({
-      query: PRODUCT_BY_SLUG_QUERY,
-      params: {
-        slug,
-      },
-    });
-    return product?.data || null;
-  } catch (error) {
-    console.log("Error fetching slug", error);
-  }
-};
-
-export const getAllCategories = async () => {
-  const CATEGORIES_QUERY = defineQuery(
-    `*[_type=="category"] | order(name asc)`
-  );
-
-  try {
-    const categories = await sanityFetch({
-      query: CATEGORIES_QUERY,
-    });
-    return categories.data || [];
-  } catch (error: any) {
-    console.log(error.message);
-  }
-};
 
 export const calculateTotals = (items: CartItem[]) => {
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
@@ -68,7 +36,7 @@ export const calculateTotals = (items: CartItem[]) => {
     }
   }
 
-  const overallTotal = totalPrice  + shippingPrice;
+  const overallTotal = totalPrice + shippingPrice;
 
   return {
     totalItems, // Toplam ürün adedi
