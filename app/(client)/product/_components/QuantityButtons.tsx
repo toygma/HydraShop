@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { CartItem, useCartStore } from "@/store";
+import { CartItem, useCartStore } from "@/zustand/store";
 import { Minus, Plus } from "lucide-react";
 
 interface QuantityButtonsProps {

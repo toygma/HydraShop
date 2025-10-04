@@ -20,14 +20,15 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const safeReviewsCount = product?.reviewsCount ?? 0;
   const productUrl = `/product/${product?.slug?.current || ""}`;
 
-  const isOutOfStock = isOutStockControl(product)
+  const isOutOfStock = isOutStockControl(product);
+
 
   if (!product) return null;
 
   return (
     <div className="group relative bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-indigo-500/20 w-full">
       {/* Image Container */}
-      <Link href={productUrl} className="block relative">
+      <Link href={isOutOfStock ? "#" : productUrl} className="block relative">
         <div className="relative w-full h-72 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 overflow-hidden">
           {product?.images?.[0]?.asset ? (
             <Image

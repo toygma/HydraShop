@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { MdDarkMode } from "react-icons/md";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { Category } from "@/sanity.types";
-import { useCartStore } from "@/store";
+import { useCartStore } from "@/zustand/store";
 
 interface Props {
   isOpen: boolean;

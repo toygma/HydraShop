@@ -1,5 +1,4 @@
-
-import { CartItem } from "@/store";
+import { CartItem } from "@/zustand/store";
 import moment from "moment";
 import { Product } from "@/sanity.types";
 
@@ -12,8 +11,6 @@ export const formattedPrice = (price: number | undefined | null): string => {
 
   return formattedPrice;
 };
-
-
 
 export const calculateTotals = (items: CartItem[]) => {
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);

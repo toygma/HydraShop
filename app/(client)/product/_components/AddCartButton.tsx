@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Product } from "@/sanity.types";
-import { useCartStore } from "@/store";
+import { useCartStore } from "@/zustand/store";
 import { toast } from "sonner";
 
 interface AddCartButtonProps {
@@ -22,7 +22,6 @@ const AddCartButton = ({
 
   const handleAddCart = () => {
     try {
-    
       addItem(product, 1);
     } catch (error: any) {
       console.error("Sepete ekleme hatası:", error);

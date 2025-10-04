@@ -4,7 +4,7 @@ import { UserButton, useUser } from "@clerk/nextjs";
 import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { MdDarkMode } from "react-icons/md";
-import { useCartStore } from "@/store";
+import { useCartStore } from "@/zustand/store";
 import { useState } from "react";
 import SearchBar from "@/components/searchBar/SearchBar";
 import { Button } from "@/components/ui/button";
@@ -89,11 +89,11 @@ const HeaderMenu = ({ category }: { category: Category[] }) => {
                 size={24}
                 className="text-gray-700 dark:text-gray-300"
               />
-               {itemCount.length > 0 && (
-                  <Badge className="absolute -top-1.5 -right-2 bg-red-500 text-white rounded-full w-4 h-4 ring-2 ring-white dark:ring-gray-800 transform scale-90 transition duration-200">
-                    {itemCount.length}
-                  </Badge>
-                )}
+              {itemCount.length > 0 && (
+                <Badge className="absolute -top-1.5 -right-2 bg-red-500 text-white rounded-full w-4 h-4 ring-2 ring-white dark:ring-gray-800 transform scale-90 transition duration-200">
+                  {itemCount.length}
+                </Badge>
+              )}
             </Link>
 
             <button

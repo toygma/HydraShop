@@ -61,3 +61,31 @@ export const getAllCategories = async () => {
     console.log(error.message);
   }
 };
+
+
+export const getMostReviews = async () => {
+  const MOST_REVIEWED_QUERY = defineQuery(
+    `*[_type=="product"] | order(reviewsCount desc)[0...4] {
+      _id,
+      name,
+      price,
+      salePrice,
+      images,
+      rating,
+      reviewsCount,
+      variants,
+      badge,
+      slug
+    }`
+  );
+
+  try {
+    const products = await sanityFetch({
+      query: MOST_REVIEWED_QUERY,
+    });
+    return products.data || [];
+  } catch (error: any) {
+    console.log(error.message);
+    return [];
+  }
+};

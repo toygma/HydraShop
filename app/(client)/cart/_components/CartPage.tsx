@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Trash } from "lucide-react";
 import Image from "next/image";
 import QuantityButtons from "../../product/_components/QuantityButtons";
-import { useCartStore } from "@/store";
+import { useCartStore } from "@/zustand/store";
 import { urlFor } from "@/sanity/lib/image";
 import { calculateTotals, formattedPrice } from "@/utils/helper";
 import { Button } from "@/components/ui/button";

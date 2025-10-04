@@ -1,6 +1,6 @@
 "use client";
 import { useEffect } from "react";
-import { useCartStore } from "@/store";
+import { useCartStore } from "@/zustand/store";
 import { CheckCircle } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -9,7 +9,7 @@ const SuccessContent = () => {
   const searchParams = useSearchParams();
   const orderNumber = searchParams.get("orderNumber");
   const sessionId = searchParams.get("session_id");
-  
+
   const { clearCart } = useCartStore();
   const router = useRouter();
 
@@ -32,7 +32,8 @@ const SuccessContent = () => {
         </h1>
 
         <p className="text-lg text-gray-600 mb-8">
-          Thank you for your purchase. A confirmation email has been sent to your inbox.
+          Thank you for your purchase. A confirmation email has been sent to
+          your inbox.
         </p>
 
         <div className="bg-green-50 p-4 rounded-lg mb-8 border border-green-200">

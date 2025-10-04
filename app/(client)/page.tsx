@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import Loading from "@/components/custom/Loading";
+import SectionAbout from "@/components/sections/SectionAbout";
+import MostReviewedProducts from "@/components/sections/MostReviewedProducts";
 
 const Products = dynamic(
   () => import("@/app/(client)/product/_components/Products")
@@ -18,6 +20,8 @@ const Home = () => {
       <Suspense>
         <Products />
       </Suspense>
+      <SectionAbout/>
+      <MostReviewedProducts/>
     </div>
   );
 };
