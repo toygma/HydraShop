@@ -85,7 +85,6 @@ async function createOrderInsanity(
 
   const sanityProducts = lineItems.data
     .map((item) => {
-      console.log("🚀 ~ createOrderInsanity ~ item:", item)
       return {
         _key: crypto.randomUUID(),
         product: {

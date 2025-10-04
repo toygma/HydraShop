@@ -34,7 +34,6 @@ interface Props {
 const OrderDetailDialog = ({ order, isOpen, onClose }: Props) => {
   if (!order) return null;
 
-  console.log("🚀 ~ OrderDetailDialog ~ order:", order);
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case "paid":

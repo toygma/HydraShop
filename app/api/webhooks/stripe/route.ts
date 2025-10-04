@@ -75,7 +75,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log(`Processing webhook event: ${event.type}`);
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
@@ -108,7 +107,6 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    console.log(`Unhandled event type: ${event.type}`);
     return NextResponse.json({ received: true });
   } catch (error: any) {
     console.error("Unexpected error in webhook handler:", error.message);
@@ -152,9 +150,6 @@ async function createOrderInSanity(
     throw new Error("Invalid email format in metadata");
   }
 
-  console.log(
-    `Creating order for customer: ${customerName} (${customerEmail})`
-  );
 
   // Fetch line items with proper error handling
   let lineItems;
@@ -191,9 +186,7 @@ async function createOrderInSanity(
           itemType.includes("discount") ||
           itemType.includes("fee")
         ) {
-          console.log(
-            `Skipping non-product item: ${product.name} (${product.id})`
-          );
+         
         } else {
           console.warn(
             `Product ${product.id} (${product.name}) missing Sanity ID in metadata`
@@ -208,13 +201,8 @@ async function createOrderInSanity(
         (product.name?.toLowerCase().includes("tax") ||
           product.name?.toLowerCase().includes("shipping"))
       ) {
-        console.log(`Skipping service item: ${product.name} (${product.id})`);
         return null;
       }
-
-      console.log(
-        `Processing product: ${product.name} (Sanity ID: ${sanityId})`
-      );
       return {
         _key: crypto.randomUUID(),
         product: {
@@ -254,10 +242,7 @@ async function createOrderInSanity(
     }
   }
 
-  console.log(
-    `Processing ${sanityProducts.length} products for order ${orderNumber}`
-  );
-
+ 
   // Calculate totals with proper null checks
   const totalPrice = amount_total ? amount_total / 100 : 0;
   const amountDiscount = total_details?.amount_discount
