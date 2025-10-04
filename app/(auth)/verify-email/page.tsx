@@ -84,7 +84,7 @@ const VerifyEmailPage = () => {
           </button>
 
           <p className="text-sm font-light text-gray-500 dark:text-gray-400 text-center pt-2">
-            Didn't receive the code?{" "}
+            Didn&apos;t receive the code?{" "}
             <Link
               href="/resend-email"
               className="font-semibold text-tertiary hover:text-orange-600 dark:hover:text-orange-400 hover:underline transition-colors"

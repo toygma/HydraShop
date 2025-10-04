@@ -56,10 +56,9 @@ const HeaderMenu = ({ category }: { category: Category[] }) => {
               >
                 <ShoppingBag size={22} />
                 {itemCount.length > 0 && (
-                  <Badge
-                    children={itemCount.length}
-                    className="absolute -top-1.5 -right-2 bg-red-500 text-white rounded-full w-4 h-4 ring-2 ring-white dark:ring-gray-800 transform scale-90 transition duration-200"
-                  />
+                  <Badge className="absolute -top-1.5 -right-2 bg-red-500 text-white rounded-full w-4 h-4 ring-2 ring-white dark:ring-gray-800 transform scale-90 transition duration-200">
+                    {itemCount.length}
+                  </Badge>
                 )}
               </Link>
             </li>
@@ -90,12 +89,11 @@ const HeaderMenu = ({ category }: { category: Category[] }) => {
                 size={24}
                 className="text-gray-700 dark:text-gray-300"
               />
-              {itemCount.length > 0 && (
-                <Badge
-                  children={itemCount.length}
-                  className="absolute -top-1.5 -right-2 bg-red-500 text-white rounded-full w-4 h-4 ring-2 ring-white dark:ring-gray-800 transform scale-90 transition duration-200"
-                />
-              )}
+               {itemCount.length > 0 && (
+                  <Badge className="absolute -top-1.5 -right-2 bg-red-500 text-white rounded-full w-4 h-4 ring-2 ring-white dark:ring-gray-800 transform scale-90 transition duration-200">
+                    {itemCount.length}
+                  </Badge>
+                )}
             </Link>
 
             <button

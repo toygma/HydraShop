@@ -9,12 +9,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: "2025-09-30.clover",
 });
 
-interface Metadata {
-  orderNumber: string;
-  customerName: string;
-  customerEmail: string;
-  clerkUserId?: string;
-}
 
 interface SanityProduct {
   _key: string;
@@ -43,7 +37,7 @@ interface SanityOrder {
   invoice?: {
     id: string;
     number: string | null;
-    hosted_invoice_url: string | null;
+    hosted_invoice_url: string | null | undefined; 
   };
 }
 
@@ -85,7 +79,7 @@ export async function POST(req: NextRequest) {
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
-      
+
       // Validate session data
       if (!session.id || !session.metadata) {
         console.error("Invalid session data: missing id or metadata");
@@ -101,10 +95,9 @@ export async function POST(req: NextRequest) {
 
       try {
         const order = await createOrderInSanity(session, invoice);
-        console.log(`Order created successfully: ${order._id}`);
-        return NextResponse.json({ 
-          received: true, 
-          orderId: order._id 
+        return NextResponse.json({
+          received: true,
+          orderId: order?.orderNumber,
         });
       } catch (error: any) {
         console.error("Failed to create order in Sanity:", error.message);
@@ -130,14 +123,28 @@ async function createOrderInSanity(
   session: Stripe.Checkout.Session,
   invoice: Stripe.Invoice | null
 ): Promise<SanityOrder> {
-  const { id, currency, metadata, payment_intent, total_details, amount_total } = session;
-  
+  const {
+    id,
+    currency,
+    metadata,
+    payment_intent,
+    total_details,
+    amount_total,
+  } = session;
+
   // Validate required metadata
-  if (!metadata?.orderNumber || !metadata?.customerName || !metadata?.customerEmail) {
-    throw new Error("Missing required metadata: orderNumber, customerName, or customerEmail");
+  if (
+    !metadata?.orderNumber ||
+    !metadata?.customerName ||
+    !metadata?.customerEmail
+  ) {
+    throw new Error(
+      "Missing required metadata: orderNumber, customerName, or customerEmail"
+    );
   }
 
-  const { orderNumber, customerName, customerEmail, clerkUserId } = metadata as Metadata;
+  const { orderNumber, customerName, customerEmail, clerkUserId } =
+    metadata as Stripe.Metadata;
 
   // Validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -145,7 +152,9 @@ async function createOrderInSanity(
     throw new Error("Invalid email format in metadata");
   }
 
-  console.log(`Creating order for customer: ${customerName} (${customerEmail})`);
+  console.log(
+    `Creating order for customer: ${customerName} (${customerEmail})`
+  );
 
   // Fetch line items with proper error handling
   let lineItems;
@@ -165,7 +174,7 @@ async function createOrderInSanity(
   // Process products with better validation - filter out tax, shipping, and other non-product items
   const sanityProducts: SanityProduct[] = lineItems.data
     .map((item) => {
-      if (!item.price?.product || typeof item.price.product !== 'object') {
+      if (!item.price?.product || typeof item.price.product !== "object") {
         console.warn(`Skipping item with invalid product data: ${item.id}`);
         return null;
       }
@@ -175,22 +184,37 @@ async function createOrderInSanity(
 
       // Skip items that are not actual products (tax, shipping, discounts, etc.)
       if (!sanityId) {
-        const itemType = product.name?.toLowerCase() || 'unknown';
-        if (itemType.includes('tax') || itemType.includes('shipping') || itemType.includes('discount') || itemType.includes('fee')) {
-          console.log(`Skipping non-product item: ${product.name} (${product.id})`);
+        const itemType = product.name?.toLowerCase() || "unknown";
+        if (
+          itemType.includes("tax") ||
+          itemType.includes("shipping") ||
+          itemType.includes("discount") ||
+          itemType.includes("fee")
+        ) {
+          console.log(
+            `Skipping non-product item: ${product.name} (${product.id})`
+          );
         } else {
-          console.warn(`Product ${product.id} (${product.name}) missing Sanity ID in metadata`);
+          console.warn(
+            `Product ${product.id} (${product.name}) missing Sanity ID in metadata`
+          );
         }
         return null;
       }
 
       // Additional check: ensure it's not a service type item (tax, shipping, etc.)
-      if (product.type === 'service' && (product.name?.toLowerCase().includes('tax') || product.name?.toLowerCase().includes('shipping'))) {
+      if (
+        product.type === "service" &&
+        (product.name?.toLowerCase().includes("tax") ||
+          product.name?.toLowerCase().includes("shipping"))
+      ) {
         console.log(`Skipping service item: ${product.name} (${product.id})`);
         return null;
       }
 
-      console.log(`Processing product: ${product.name} (Sanity ID: ${sanityId})`);
+      console.log(
+        `Processing product: ${product.name} (Sanity ID: ${sanityId})`
+      );
       return {
         _key: crypto.randomUUID(),
         product: {
@@ -205,31 +229,39 @@ async function createOrderInSanity(
   if (sanityProducts.length === 0) {
     // Check if there were any line items at all
     const totalLineItems = lineItems.data.length;
-    const nonProductItems = lineItems.data.filter(item => {
+    const nonProductItems = lineItems.data.filter((item) => {
       const product = item.price?.product as Stripe.Product;
-      return !product?.metadata?.id || 
-             product.type === 'service' || 
-             product.name?.toLowerCase().includes('tax') ||
-             product.name?.toLowerCase().includes('shipping');
+      return (
+        !product?.metadata?.id ||
+        product.type === "service" ||
+        product.name?.toLowerCase().includes("tax") ||
+        product.name?.toLowerCase().includes("shipping")
+      );
     }).length;
-    
-    console.warn(`Order processing: ${totalLineItems} total items, ${nonProductItems} non-product items, ${sanityProducts.length} valid products`);
-    
+
+    console.warn(
+      `Order processing: ${totalLineItems} total items, ${nonProductItems} non-product items, ${sanityProducts.length} valid products`
+    );
+
     if (totalLineItems === 0) {
       throw new Error("No line items found in the order");
     } else if (nonProductItems === totalLineItems) {
-      throw new Error("Order contains only tax, shipping, or other non-product items - no actual products to process");
+      throw new Error(
+        "Order contains only tax, shipping, or other non-product items - no actual products to process"
+      );
     } else {
       throw new Error("No valid products with Sanity ID found in the order");
     }
   }
 
-  console.log(`Processing ${sanityProducts.length} products for order ${orderNumber}`);
+  console.log(
+    `Processing ${sanityProducts.length} products for order ${orderNumber}`
+  );
 
   // Calculate totals with proper null checks
   const totalPrice = amount_total ? amount_total / 100 : 0;
-  const amountDiscount = total_details?.amount_discount 
-    ? total_details.amount_discount / 100 
+  const amountDiscount = total_details?.amount_discount
+    ? total_details.amount_discount / 100
     : 0;
 
   // Create order object with proper typing

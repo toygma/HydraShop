@@ -124,7 +124,7 @@ const SignInPage = () => {
           </button>
 
           <p className="text-sm font-light text-gray-500 dark:text-gray-400 text-center pt-2">
-            Don't have an account ?{" "}
+            Don&apos;t have an account ?{" "}
             <Link
               href="/sign-up"
               className="font-semibold text-tertiary hover:text-orange-600 dark:hover:text-orange-400 hover:underline transition-colors"

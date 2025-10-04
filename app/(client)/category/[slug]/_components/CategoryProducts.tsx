@@ -1,9 +1,10 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Category } from "@/sanity.types";
+import { Category, Product } from "@/sanity.types";
 import { client } from "@/sanity/lib/client";
 import { useEffect, useState } from "react";
 import CategoryMain from "./CategoryMain";
+import Loading from "@/components/custom/Loading";
 
 interface Props {
   categories: Category[];
@@ -13,7 +14,7 @@ interface Props {
 const CategoryProducts = ({ categories, slug }: Props) => {
   const [currentSlug, setCurrentSlug] = useState(slug);
   const [loading, setLoading] = useState(false);
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
 
   const fetchProducts = async (categorySlug: string) => {
     setLoading(true);
@@ -138,9 +139,11 @@ const CategoryProducts = ({ categories, slug }: Props) => {
 
               {/* Ürün Grid Placeholder */}
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {products.map((product) => (
-                  <CategoryMain product={product} />
-                ))}
+                {loading ? (
+                  <Loading fullScreen size={40}/>
+                ) : (
+                  products.map((product) => <CategoryMain key={product._id} product={product} />)
+                )}
               </div>
             </div>
           </main>

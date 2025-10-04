@@ -13,7 +13,6 @@ import FormInput from "../inputs/FormInput";
 import { useForm } from "react-hook-form";
 import { SearchData, searchSchema } from "@/validation/search.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "../ui/button";
 import { client } from "@/sanity/lib/client";
 import Loading from "../custom/Loading";
 import { Product } from "@/sanity.types";
@@ -35,7 +34,6 @@ const SearchBar = () => {
   });
 
   const {
-    handleSubmit,
     watch,
     setValue,
     formState: { errors },
@@ -72,7 +70,6 @@ const SearchBar = () => {
     return () => clearTimeout(debounceTimer);
   }, [currentSearchTerm, fetchProducts]);
 
-  const onSubmit = (data: SearchData) => {};
 
   return (
     <Dialog open={showSearch} onOpenChange={() => setShowSearch(!showSearch)}>
@@ -87,7 +84,7 @@ const SearchBar = () => {
           <DialogTitle className="mb-1">Product Search</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 w-full">
+          <form className="space-y-6 w-full">
             <div className=" gap-3 p-4 relative ">
               <Search className="w-5 h-5 text-gray-400 flex-shrink-0 absolute left-6 bottom-6 " />
               <FormInput
@@ -192,7 +189,7 @@ const SearchBar = () => {
                     product not found
                   </h3>
                   <p className="text-gray-500 text-sm">
-                    "<span className="font-medium">{currentSearchTerm}</span>"
+                    &quot;<span className="font-medium">{currentSearchTerm}</span>&quot;
                     for product not found
                   </p>
                 </div>

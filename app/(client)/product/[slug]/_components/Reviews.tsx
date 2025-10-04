@@ -17,6 +17,7 @@ import StarRatings from "react-star-ratings";
 import { toast } from "sonner";
 import EditingComment from "./EditingComment";
 import { formatDateLocal } from "@/utils/helper";
+import Loading from "@/components/custom/Loading";
 
 interface ReviewsProps {
   product: Product;
@@ -24,7 +25,7 @@ interface ReviewsProps {
 const Reviews = ({ product }: ReviewsProps) => {
   const [reviews, setReviews] = useState<ProductReview[]>([]);
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
-  const [Loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { user } = useUser();
 
   const form = useForm<ReviewFormData>({
@@ -107,7 +108,7 @@ const Reviews = ({ product }: ReviewsProps) => {
         </h1>
 
         {reviews.map((review) => (
-          <div className="flex flex-col sm:flex-row items-start gap-6 py-6 border-b border-gray-100 hover:bg-gray-50 transition duration-300 rounded-lg p-3 -m-3">
+          <div key={review._id} className="flex flex-col sm:flex-row items-start gap-6 py-6 border-b border-gray-100 hover:bg-gray-50 transition duration-300 rounded-lg p-3 -m-3">
             <div className="flex flex-col items-center min-w-[100px]">
               <Image
                 src={`https://robohash.org/${review._id}?set=set4&bgset=&size=400x400`}
@@ -119,66 +120,70 @@ const Reviews = ({ product }: ReviewsProps) => {
             </div>
 
             {/* Yorum İçeriği */}
-            <div className="flex-1 flex flex-col gap-2 w-full">
-              {/* İsim, Tarih ve Rating (Tek Satırda) */}
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-1">
-                {/* İsim ve Tarih (Mobil için Resmin altında) */}
-                <div className="flex items-center gap-2 mb-2 sm:mb-0">
-                  <p className="font-semibold text-gray-800 text-lg sm:text-base">
-                    {review.name}
-                  </p>
-                  <span className="text-gray-400 text-xs hidden sm:inline">
-                    •
-                  </span>
-                  <p className="text-xs text-gray-500 hidden sm:inline-block">
-                    {formatDateLocal(review._createdAt)}
-                  </p>
-                </div>
-
-                <div className="flex flex-col items-end">
-                  <div className="flex items-center">
-                    <StarRatings
-                      rating={review.rating}
-                      starRatedColor="#facc15"
-                      starEmptyColor="#e5e7eb"
-                      numberOfStars={5}
-                      starDimension="20px"
-                      starSpacing="2px"
-                      name="rating"
-                    />
-                    <span className="ml-2 text-sm font-medium text-gray-700 pt-1">
-                      {review.rating}
+            {loading ? (
+              <Loading fullScreen size={25} />
+            ) : (
+              <div className="flex-1 flex flex-col gap-2 w-full">
+                {/* İsim, Tarih ve Rating (Tek Satırda) */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-1">
+                  {/* İsim ve Tarih (Mobil için Resmin altında) */}
+                  <div className="flex items-center gap-2 mb-2 sm:mb-0">
+                    <p className="font-semibold text-gray-800 text-lg sm:text-base">
+                      {review.name}
+                    </p>
+                    <span className="text-gray-400 text-xs hidden sm:inline">
+                      •
                     </span>
+                    <p className="text-xs text-gray-500 hidden sm:inline-block">
+                      {formatDateLocal(review._createdAt)}
+                    </p>
                   </div>
-                  <div className="pt-2">
-                    <Button
-                      onClick={() =>
-                        setEditingCommentId(
-                          editingCommentId === review._id ? null : review._id
-                        )
-                      }
-                      variant={"outline"}
-                      className="cursor-pointer"
-                    >
-                      <Edit className="w-4 h-4 " />
-                    </Button>
+
+                  <div className="flex flex-col items-end">
+                    <div className="flex items-center">
+                      <StarRatings
+                        rating={review.rating}
+                        starRatedColor="#facc15"
+                        starEmptyColor="#e5e7eb"
+                        numberOfStars={5}
+                        starDimension="20px"
+                        starSpacing="2px"
+                        name="rating"
+                      />
+                      <span className="ml-2 text-sm font-medium text-gray-700 pt-1">
+                        {review.rating}
+                      </span>
+                    </div>
+                    <div className="pt-2">
+                      <Button
+                        onClick={() =>
+                          setEditingCommentId(
+                            editingCommentId === review._id ? null : review._id
+                          )
+                        }
+                        variant={"outline"}
+                        className="cursor-pointer"
+                      >
+                        <Edit className="w-4 h-4 " />
+                      </Button>
+                    </div>
                   </div>
                 </div>
+                <div className="">
+                  {editingCommentId === review._id ? (
+                    <EditingComment
+                      commentId={review._id}
+                      onSuccess={() => setEditingCommentId(null)}
+                      review={review}
+                    />
+                  ) : (
+                    <p className=" text-gray-700 leading-relaxed">
+                      {review?.message}
+                    </p>
+                  )}
+                </div>
               </div>
-              <div className="">
-                {editingCommentId === review._id ? (
-                  <EditingComment
-                    commentId={review._id}
-                    onSuccess={() => setEditingCommentId(null)}
-                    review={review}
-                  />
-                ) : (
-                  <p className=" text-gray-700 leading-relaxed">
-                    {review?.message}
-                  </p>
-                )}
-              </div>
-            </div>
+            )}
           </div>
         ))}
         <div>

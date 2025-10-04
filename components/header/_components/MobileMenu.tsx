@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { MdDarkMode } from "react-icons/md";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { Category } from "@/sanity.types";
+import { useCartStore } from "@/store";
 
 interface Props {
   isOpen: boolean;
@@ -15,6 +16,7 @@ interface Props {
 
 const MobileMenu = ({ isOpen, onClose, category }: Props) => {
   const { isSignedIn } = useUser();
+  const itemCount = useCartStore((state) => state.items);
 
   return (
     <>
@@ -91,13 +93,11 @@ const MobileMenu = ({ isOpen, onClose, category }: Props) => {
               >
                 <ShoppingBag size={22} />
                 <span className="text-xs mt-1">Bag</span>
-                <Badge
-                  children={2}
-                  className="absolute -top-1 -right-3 text-[10px] font-bold 
-                             bg-red-500 text-white rounded-full w-4 h-4 
-                             ring-2 ring-white dark:ring-gray-900 
-                             "
-                />
+                {itemCount.length > 0 && (
+                  <Badge className="absolute -top-1.5 -right-2 bg-red-500 text-white rounded-full w-4 h-4 ring-2 ring-white dark:ring-gray-800 transform scale-90 transition duration-200">
+                    {itemCount.length}
+                  </Badge>
+                )}
               </Link>
             </li>
 

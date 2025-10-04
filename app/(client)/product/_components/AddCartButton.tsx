@@ -19,7 +19,6 @@ const AddCartButton = ({
   className,
 }: AddCartButtonProps) => {
   const addItem = useCartStore((state) => state.addItem);
-  const itemTotal = useCartStore((state)=>state.totalItems)
 
   const handleAddCart = () => {
     try {

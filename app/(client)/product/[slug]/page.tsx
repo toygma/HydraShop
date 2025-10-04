@@ -1,17 +1,50 @@
+import { Metadata } from "next";
 import { getProductsBySlug } from "@/utils/helper";
 import { notFound } from "next/navigation";
-import React from "react";
 import ImageView from "./_components/ImageView";
 import { Product } from "@/sanity.types";
 import PriceView from "@/app/(client)/product/_components/PriceView";
 import { Button } from "@/components/ui/button";
-import { Heart, Bookmark, BoxIcon, Share } from "lucide-react";
+import { Heart, Bookmark } from "lucide-react";
 import ProductCharacteristics from "@/app/(client)/product/_components/ProductCharacteristics";
 import { productActions } from "./_components/product-action";
 import AddCartButton from "@/app/(client)/product/_components/AddCartButton";
 import TabDetail from "./_components/TabDetail";
 
-const SingleProductPage = async ({ params }: { params: { slug: string } }) => {
+type Props = {
+  params: Promise<{ slug: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+
+  const categoryName = slug
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+
+  return {
+    title: `${categoryName} - Product`,
+    description: `Explore products in the ${categoryName} category. Find the best ${categoryName.toLowerCase()} products here.`,
+    keywords: [categoryName, "products", "shopping"],
+    openGraph: {
+      title: `${categoryName} - Product`,
+      description: `Discover products in the ${categoryName} category.`,
+      type: "website",
+      url: `/product/${slug}`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${categoryName} - Product`,
+      description: `Discover products in the ${categoryName} category.`,
+    },
+    alternates: {
+      canonical: `/product/${slug}`,
+    },
+  };
+}
+
+const SingleProductPage = async ({ params }: Props) => {
   const { slug } = await params;
 
   const product: Product = await getProductsBySlug(slug);
@@ -41,8 +74,6 @@ const SingleProductPage = async ({ params }: { params: { slug: string } }) => {
                 salePrice={product?.salePrice}
               />
             </div>
-
-          
 
             <div className="flex flex-col sm:flex-row gap-3 mt-4">
               <AddCartButton className="mt-0 h-[5vh]!" product={product} />
@@ -99,7 +130,7 @@ const SingleProductPage = async ({ params }: { params: { slug: string } }) => {
           </div>
         </div>
       </div>
-      <TabDetail product={product}/>
+      <TabDetail product={product} />
     </>
   );
 };

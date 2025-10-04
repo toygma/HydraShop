@@ -6,7 +6,7 @@ import CategoryProducts from "./_components/CategoryProducts";
 // Extract Params type
 type Props = {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 // Metadata generate function
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 // Main component
-const CategoryPage = async ({ params, searchParams }: Props) => {
+const CategoryPage = async ({ params }: Props) => {
   const { slug } = await params;
   const categories = await getAllCategories();
 
