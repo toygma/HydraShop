@@ -1,36 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎯 HydraShop
 
-## Getting Started
+A sleek and modern **e-commerce web app** designed to provide a smooth shopping experience, built with **Next.js 15**, **Tailwind CSS**, and **Sanity CMS**.
 
-First, run the development server:
+---
+
+## 🚀 Features
+
+### 🛒 Customer Features
+
+- ✅ **User authentication & registration (Clerk)**
+- ✅ **Profile & order management**
+- ✅ **Browse products with categories and filters**
+- ✅ **Add to cart & wishlist**
+- ✅ **Secure checkout with Stripe payments**
+- ✅ **View order history & details**
+- ✅ **Product reviews & ratings**
+
+### 🏪 Admin Features
+
+- ✅ **Manage products, categories, and inventory (Sanity CMS)**
+- ✅ **Update pricing, discounts, and promotions**
+- ✅ **Track and manage customer orders**
+- ✅ **Dashboard with sales insights**
+
+---
+
+## 🛠️ Technical Highlights
+
+- ✅ **Next.js 15 with App Router for modern frontend**
+- ✅ **Tailwind CSS responsive UI**
+- ✅ **Framer Motion for smooth animations & transitions**
+- ✅ **Sanity as Headless CMS & database**
+- ✅ **Stripe integration for secure online payments**
+- ✅ **Clerk for authentication & user management**
+- ✅ **React Hook Form + Zod for form validation**
+- ✅ **Zustand for lightweight state management**
+- ✅ **ShadCN UI for modern, accessible components**
+- ✅ **Toast notifications for alerts & feedback**
+
+---
+
+## .ENV
+
+```bash
+AUTH_GOOGLE_CLIENT_ID=""
+AUTH_GOOGLE_CLIENT_SECRET=""
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=""
+CLERK_SECRET_KEY=""
+NEXT_PUBLIC_BASE_URL=""
+NEXT_PUBLIC_SANITY_PROJECT_ID=""
+NEXT_PUBLIC_SANITY_DATASET=""
+SANITY_API_TOKEN=""
+SANITY_API_READ_TOKEN=""
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=""
+STRIPE_SECRET_KEY=""
+STRIPE_WEBHOOK_SECRET=""
+```
+
+## 🧰 Tech Stack
+
+| Layer      | Technology                      |
+| ---------- | ------------------------------- |
+| Frontend   | NEXT.JS 15.5.4, Tailwind CSS    |
+| Backend    | Sanity (Headless CMS)           |
+| Database   | Sanity (content + data storage) |
+| Auth       | Clerk                           |
+| Animations | Framer Motion                   |
+| Forms      | React Hook Form                 |
+| UI         | ShadCN                          |
+| Alerts     | React Hot Toast                 |
+
+---
+
+## 🧑‍💻 Getting Started
+
+### 🔧 Prerequisites
+
+- Node.js `v22+`
+
+### 📦 Installation
+
+```bash
+# 1. Clone the repository
+git clone <repository-url>
+cd HydraShop
+```
+
+# 2. Install dependencies
+
+```bash
+pnpm install && npm install
+```
+
+# 3. Run
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### ✨ UI & UX
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Clean, modern design with **TailwindCSS**
+- Fully responsive (desktop, tablet, mobile)
+- Smooth transitions & micro-interactions with **Framer Motion**
+- **Role-based dashboards** (Customer / Admin)
+- **ShadCN UI components** for accessibility & consistency
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+### 🔐 Security & Performance
 
-To learn more about Next.js, take a look at the following resources:
+- Secure authentication & authorization with **Clerk**
+- Safe online payments with **Stripe**
+- Form validation & sanitization using **Zod**
+- Optimized content & product data with **Sanity CMS**
+- Lightweight global state management with **Zustand**
+- Fast rendering & performance optimization with **Next.js 15**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 🚢 Deployment
 
-## Deploy on Vercel
+- **Frontend & backend deployed on Vercel** (Next.js)
+- **Sanity Studio hosted on Sanity.io**
+- **Stripe for payment infrastructure**
+- **Clerk for authentication & user management**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
