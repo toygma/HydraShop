@@ -1,7 +1,7 @@
 "use client";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { UserButton, useUser } from "@clerk/nextjs";
-import { ShoppingBag } from "lucide-react";
+import { Bookmark, Heart, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { MdDarkMode } from "react-icons/md";
 import { useCartStore } from "@/zustand/store";
@@ -12,10 +12,14 @@ import { Badge } from "@/components/ui/badge";
 import MobileMenu from "./MobileMenu";
 import { usePathname } from "next/navigation";
 import { Category } from "@/sanity.types";
+import { useWishlistStore } from "@/zustand/wishlistStore";
+import { useSavedStore } from "@/zustand/saveStore";
 
 const HeaderMenu = ({ category }: { category: Category[] }) => {
   const itemCount = useCartStore((state) => state.items);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+   const { wishlist } = useWishlistStore();
+  const { savedProducts } = useSavedStore();
   const pathname = usePathname();
   const { isSignedIn } = useUser();
 
@@ -68,6 +72,43 @@ const HeaderMenu = ({ category }: { category: Category[] }) => {
                 title="Toggle Dark Mode"
                 size={24}
               />
+            </li>
+            {/* Wishlist */}
+            <li>
+              <Link
+                href={"/wishlist"}
+                className="hover:text-rose-500 dark:hover:text-rose-400 transition-colors duration-300 relative group"
+                title="Beğenilenler"
+              >
+                <Heart
+                  size={22}
+                  className="group-hover:fill-rose-500 dark:group-hover:fill-rose-400 transition-all duration-300"
+                />
+                {wishlist.length > 0 && (
+                  <Badge className="absolute -top-1.5 -right-2 bg-rose-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs ring-2 ring-white dark:ring-gray-800 transition duration-200">
+                    {wishlist.length}
+                  </Badge>
+                )}
+              </Link>
+            </li>
+
+            {/* Saved Products */}
+            <li>
+              <Link
+                href={"/saveProduct"}
+                className="hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors duration-300 relative group"
+                title="Kaydedilenler"
+              >
+                <Bookmark
+                  size={22}
+                  className="group-hover:fill-indigo-500 dark:group-hover:fill-indigo-400 transition-all duration-300"
+                />
+                {savedProducts.length > 0 && (
+                  <Badge className="absolute -top-1.5 -right-2 bg-indigo-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs ring-2 ring-white dark:ring-gray-800 transition duration-200">
+                    {savedProducts.length}
+                  </Badge>
+                )}
+              </Link>
             </li>
           </ul>
         </div>
